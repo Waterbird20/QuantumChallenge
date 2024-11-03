@@ -1,0 +1,266 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage{physics}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{minted}
+\definecolor{bg}{HTML}{282828}
+\usemintedstyle{monokai}
+
+
+\begin{document}
+\title{SKKU 2024 Challenge - Quantum State Tomography}
+\author{Donghun Jung}
+\maketitle
+
+\section*{Problem 1: Quantum States with Few Qubits}
+
+The first class of states that we will consider are generic pure quantum states (i.e. there is no restriction on the quantum circuit which created the state), on a small number of qubits. In general, a generic quantum state will require an exponential number of measurements to reconstruct. However, when the number of qubits is small, we can simply pay this exponential cost.
+
+\subsection*{Part I}
+
+In this first problem, we have a single qubit quantum state
+\begin{equation}
+	\ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1},
+\end{equation}
+where we can treat the unknown parameters $a,b$ and $\theta$ as real positive numbers with $|a|^2 + |b|^2 = 1$ and $\theta \in \left[ 0, 2\pi \right)$.
+
+\paragraph{a) Explain how one can determine the values of $a, b$ and $\theta$ by measuring the quantum state in different bases.}
+
+\paragraph{b) Write a program in Qiskit which generates this unknown quantum state.}
+
+
+To generate a random single qubit quantum state we use a circuit $U_{\text{hidden}}$, so that $\ket{\psi} = U_{\text{hidden}} \ket{0}$.
+I used the following provided code, to generate random state.
+\begin{minted}[bgcolor=bg,
+               frame=lines,
+               framesep=2mm]{python}
+def create_1q_target_circuit(qc_data):
+    qc = qiskit.QuantumCircuit(1)
+    qc.ry(qc_data[0],0)
+    qc.rz(qc_data[1],0)
+    return qc
+\end{minted}
+The given state can be written as:
+\begin{equation}
+	\ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1}
+	\label{eq:single_pure_state}
+\end{equation}
+where $a, b, \theta$ are unknown real parameter subject to $a^2 + b^2 =1$ and $0 \leq \theta < 2\pi$. 
+In order to determine these three parameter, it requires at least three measurement. 
+
+Our measurement is performed via POVM. There are detectors whose number is equal to the number of qubits. 
+In this scenerio, we perform $z$-basis projection measurement. Therefore, the POVM becomes $\left\{ \ket{0}\bra{0}, \ket{1}\bra{1}\right\}$, each corresponds to the presense of signal or not. 
+
+Let $\hat{m}_0, \hat{m}_1$ denote the estimated probability of occuring signals. 
+We can add another operation $U$ before the measurement and after the computational stage(here, state preparation), we can perform measurement another POVM basis, $\left\{ U^{\dagger} \ket{0}\bra{0} U, U^{\dagger} \ket{1}\bra{1} U\right\}$.
+
+In first measurement, to determine $a, b$, we can directly perform measurement without any unitary operation. That is $U^1 = I$, here. 
+Then, we see:
+\begin{align}
+	\hat{m}_0 &\simeq  \left| \bra{\psi}\ket{0} \right|^2 &= a^2 \\
+	\hat{m}_1 &\simeq  \left| \bra{\psi}\ket{1} \right|^2 &= b^2 \\
+\end{align}
+Therefore, we can estimate,
+\begin{align}
+	a &= \sqrt{\hat{m}_0} \\
+	b &= \sqrt{\hat{m}_1} \\
+\end{align}
+On the other hand, we need two additional measurement. 
+Here let $U_2 = H$, where $H$ is a hadamard gate.
+\begin{equation}
+	H = \frac{1}{\sqrt{2}}
+	\begin{pmatrix}
+		1 & 1 \\
+		1 & -1
+	\end{pmatrix}.
+\end{equation}
+Then, our POVM becomes $\left\{ \ket{+}\bra{+}, \ket{-}\bra{-}\right\}$ where $\ket{+}, \ket{-}$ are the eigenstate of Pauli-X matrix whose eigenvalue is $1,-1$ for each.
+Here, let $\hat{m}_{+}, \hat{m}_{-}$ be the estimated probability of occuring signals.
+\begin{align}
+	\hat{m}_{+} &\simeq  \left| \bra{\psi}\ket{+} \right|^2 &= \left| \frac{a + b e^{i\theta}}{2} \right|^2 &= \frac{1 + 2ab\cos\theta}{2}  \\
+	\hat{m}_{-} &\simeq  \left| \bra{\psi}\ket{-} \right|^2 &= \left| \frac{a - b e^{i\theta}}{2} \right|^2 &= \frac{1 - 2ab\cos\theta}{2} 
+\end{align}
+Or,
+\begin{equation}
+	\cos\theta = \frac{\hat{m}_{+} - \hat{m}_{-}}{2ab}
+\end{equation}
+Here, it is not enough yet, as there is a degree of freedom choosing a sign of $\sin\theta$. 
+Finally, let $U_3 = S H$ where $S$ is S gate.
+\begin{equation}
+	S = \begin{pmatrix}
+		1 & 0 \\
+		0 & i 
+	\end{pmatrix}.
+\end{equation}
+Then our POVM becomes $\left\{ \ket{i}\bra{i}, \ket{-i}\bra{-i}\right\}$ where $\ket{i}, \ket{-i}$ are the eigenstate of Pauli-Y matrix whose eigenvalue is $1,-1$ for each.
+Here, let $\hat{m}_{i}, \hat{m}_{-i}$ be the estimated probability of occuring signals.
+\begin{align}
+	\hat{m}_{i} &\simeq  \left| \bra{\psi}\ket{i} \right|^2 &= \left| \frac{a + b e^{i(\theta + \frac{\pi}{2})}}{2} \right|^2 &= \frac{1 + 2ab\sin\theta}{2}  \\
+	\hat{m}_{-i} &\simeq  \left| \bra{\psi}\ket{-i} \right|^2 &= \left| \frac{a - b e^{i\theta  + \frac{\pi}{2}}}{2} \right|^2 &= \frac{1 - 2ab\sin\theta}{2}  
+\end{align}
+Or,
+\begin{equation}
+	\sin\theta = \frac{\hat{m}_{i} - \hat{m}_{-i}}{2ab}
+\end{equation}
+
+Then, we determine circuit ansatz and the circuit parameter. 
+Using ZYZ decomposition, we can represent all the unitary operation on a single qubit. 
+Here, for state preparation, we only need RY and RZ gate. The state would be 
+\begin{equation}
+	\ket{\psi} = \cos \left( \frac{\phi}{2} \right) \ket{0} + e^{i\theta} \sin \left( \frac{\phi}{2} \right)\ket{1}.
+\end{equation} 
+Comparing this with the Eq. \ref{eq:single_pure_state}, we can determine circuit parameter $\theta, \phi$. 
+\begin{align}
+	a &= \cos \left( \frac{\phi}{2} \right) \\
+	b &= \sin \left( \frac{\phi}{2} \right) \\
+	\theta &= \theta
+\end{align}
+To evaluate this reconstruction scheme, the following provided code is used.
+\begin{minted}[bgcolor=bg,
+               frame=lines,
+               framesep=2mm]{python}
+backend2 = Aer.get_backend("statevector_simulator")
+def give_score(U_hidden, U_gen):
+	qc = U_hidden.compose(U_gen.inverse())
+	result = backend2.run(qc).result()
+	score = result.get_statevector()[0]
+	return np.abs(score)
+\end{minted}
+
+I conducted some simulation with this code. 
+
+\subsection*{Part II}
+We will now increase the complexity by reconstructing a generic two-qubit quantum state.
+\begin{equation}
+	\ket{\psi} = a\ket{00} + b\ket{01} + c\ket{10} + \ket{11}
+\end{equation}
+where $|a|^2 + |b|^2 + |c|^2 + |d|^2 = 1$.
+
+\paragraph{a) First, consider the case where all amplitudes are real numbers. Explain how you can measure both the magnitude and sign of the unknown amplitudes, measuring in as few different bases as possible.}
+
+\paragraph{b) Now, explain how you would adapt this measurement protocol if the amplitudes $a,b,c,d$ are complex numbers. Note, that we can only reconstruct the wavefunction up to a global phase, so that we can always consider $a$ to be a positive real number.}
+
+The two-qubit pure state can be written as:
+\begin{equation}
+	\ket{\psi} = a\ket{00} + b e^{i\theta_{b}} \ket{01} + c e^{i\theta_{c}} \ket{10} + d e^{i\theta_{b}} \ket{11}
+\end{equation}
+where $a, b, c$ and $d$ are real posivive numbers $\theta_b , \theta_c , \theta_d$ are real numbers subject to $0 \le \theta_{b} , \theta_{c} , \theta_{d} <2\pi $ without loss of generality.
+If the parameters are subjected to real numbers, it seems sufficient to idenify all the parameters $a, b, c$ and $d$ with running two circuits. 
+First, we run circuit without any additional operation, $U=I$. 
+Then our POVM bases are $\left\{ \ket{00}\bra{00}, \ket{01}\bra{01}, \ket{10}\bra{10}, \ket{11}\bra{11} \right\}$, which directly reproduce $a^2 , b^2 , c^2$ and $d^2$.
+That is,
+\begin{align}
+	\hat{m}_{00} &\simeq \left| \bra{\psi}\ket{00} \right|^2 &= a^2 \\ 
+	\hat{m}_{01} &\simeq \left| \bra{\psi}\ket{01} \right|^2 &= b^2 \\ 
+	\hat{m}_{10} &\simeq \left| \bra{\psi}\ket{10} \right|^2 &= c^2 \\ 
+	\hat{m}_{11} &\simeq \left| \bra{\psi}\ket{11} \right|^2 &= d^2  
+\end{align}
+Next, using Hadamard gate on first qubit, we have:
+\begin{align}
+	\hat{m}_{+0} &\simeq \left| \bra{\psi}\ket{+0} \right|^2 &= \left| \frac{a+c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{+1} &\simeq \left| \bra{\psi}\ket{+1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{-0} &\simeq \left| \bra{\psi}\ket{-0} \right|^2 &= \left| \frac{a-c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{-1} &\simeq \left| \bra{\psi}\ket{-1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d}}{\sqrt{2}}\right|^2
+\end{align}
+Then, we see:
+\begin{align}
+	\cos\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+	\cos(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+\end{align}
+With Hadamard gate and S gate on first qubit, we see:
+\begin{align}
+	\hat{m}_{i0} &\simeq \left| \bra{\psi}\ket{i0} \right|^2 &= \left| \frac{a+c e^{i\theta_c + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{i1} &\simeq \left| \bra{\psi}\ket{i1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{-i0} &\simeq \left| \bra{\psi}\ket{-i0} \right|^2 &= \left| \frac{a-c e^{i\theta_c - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{-i1} &\simeq \left| \bra{\psi}\ket{-i1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
+\end{align}
+Then, 
+\begin{align}
+	\sin\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+	\sin(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+\end{align}
+Also, using Hadamard gate on second qubit, we have:
+\begin{align}
+	\hat{m}_{0+} &\simeq \left| \bra{\psi}\ket{0+} \right|^2 &= \left| \frac{a+b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{0-} &\simeq \left| \bra{\psi}\ket{0-} \right|^2 &= \left| \frac{a -b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{1+} &\simeq \left| \bra{\psi}\ket{1+} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{1-} &\simeq \left| \bra{\psi}\ket{1-} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d}}{\sqrt{2}}\right|^2
+\end{align}
+Then, we see:
+\begin{align}
+	\cos\theta_{b} &= \frac{\hat{m}_{0+} - \hat{m}_{0-}}{2}\\
+	\cos(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{1+} - \hat{m}_{1-}}{2}\\
+\end{align}
+With Hadamard gate and S gate on second qubit, we see:
+\begin{align}
+	\hat{m}_{0i} &\simeq \left| \bra{\psi}\ket{0i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{1i} &\simeq \left| \bra{\psi}\ket{1i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+	\hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
+\end{align}
+Then, 
+\begin{align}
+	\sin\theta_{b} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+	\sin(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+\end{align}
+Now we can determine $\theta_{b}, \theta_{c}$ $\theta_{d}$.
+
+
+\paragraph{c) Now write a program in Qiskit which will generate this unknown quantum state. Use the same format as for part I.}
+
+To generate random state the following provided code is used:
+\begin{minted}[bgcolor=bg,
+               frame=lines,
+               framesep=2mm]{python}
+def create_2q_target_circuit(qc_data):
+    qc = qiskit.QuantumCircuit(2)
+    for i in range(2):
+        qc.ry(qc_data[2*i+1],i)
+        qc.rz(qc_data[2*i+1],i)
+    qc.cz(0,1)
+    qc.rz(qc_data[4],1)
+    qc.cx(0,1)
+    for i in range(2):
+        qc.ry(qc_data[2*i+5],i)
+        qc.rz(qc_data[2*i+5],i)
+    return qc
+\end{minted}
+
+\subsection*{Part III}
+\paragraph{Describe how you could extend the protocol developed in part’s I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
+
+\section*{Problem 2 : Graph States}
+
+\paragraph{a) }
+The graph state is generated using the provided code.
+\begin{minted}[bgcolor=bg,
+               frame=lines,
+               framesep=2mm]{python}
+def generate_clifford_circ(num_qubits, depth):
+    U_hidden = qiskit.QuantumCircuit(num_qubits)
+    for i in range(num_qubits):
+        U_hidden.h(i)
+    count = 0
+    s1s2 = {-1,-1}
+    while(count < depth):
+        site_i = int(np.random.rand()*num_qubits)
+        site_j = int(np.random.rand()*num_qubits)
+        if(site_i == site_j or {site_i, site_j} == s1s2):
+            continue
+        print(site_i, site_j, count)
+        count += 1
+        s1s2 = {site_i, site_j}
+        U_hidden.cz(site_i, site_j)
+    return U_hidden
+\end{minted}
+
+\section*{Problem 3 : Low Depth Brickwork Circuits}
+%\bibliography{reference}
+%\bibliographystyle{plain}
+
+\end{document}
