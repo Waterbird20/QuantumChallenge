@@ -5,11 +5,34 @@
 %style=numeric,
 %]{biblatex}
 \usepackage{physics}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{physics}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{ragged2e}
+\usepackage{esint}
+\usepackage{wrapfig}
+\usepackage{mdframed}
+\usepackage{filecontents}
+\usepackage{lipsum} 
+\usepackage{pdflscape}
+\usepackage{lscape}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{minted}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{bg}{HTML}{282828}
+\usemintedstyle{monokai}
 %\addbibresource{reference.bib}
 
 \begin{document}
-\title{}
-\author{}
+\title{SKKU 2024 Challenge: Dicke State Preparation}
+\author{Donghun Jung}
 \maketitle
 
 \section*{Exercise 1}
@@ -34,22 +57,140 @@ where $\left[ a \right]$ denotes the smallest integer larger than $a$.
 \section*{Exercise 2}
 Using qiskit, create a function that takes in a quantum state in vector format as input and returns a quantum circuit that measures the Hamming weight of the state. Hint: see ref \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}. You can use qiskit's initialize module to initialize the states.
 
+From the given reference, in order to measure Hamming weight of $n$ qubit system, it requires $k$ qubits as a control register as discussed in the Exercise 1 b). 
+Let $\ket{\Psi}$ denote the wavefunction for whole system including control registers and prepared state.
+Given arbitrary state $\ket{\psi}$, the following algorithm starts with preparing $\ket{\psi} \otimes \ket{0}_{C}^{\otimes k}$.
+Then, act on the control register qubits with $k$ Hadamard gates, we have:
+\begin{align}
+	\ket{\Psi} &= \ket{\psi} \otimes H^{\otimes k} \ket{0}_{C}^{\otimes k} \\
+	&= \ket{\psi} \otimes \ket{+}_{C}^{\otimes k}
+\end{align} 
+Next, acting on $R_{z}(\gamma_{j})_{C_{j}}$ gate on $j$ qubit, labeled $C_{j}$ where $\gamma_{j} = \frac{n\pi}{N+1}2^{j-1}$.
+\begin{align}
+	\ket{\Psi} = \ket{\psi} \otimes \Pi_{j=1}^{k} R_{z}(\gamma_{j})_{C_{j}} \ket{+}_{C_{j}}
+	\label{eq:algorithm2}
+\end{align}
+Applying the following controlled-Z gate,
+\begin{align}
+	U = \Pi_{j=1}^{k} \left[ \ketbra{0}_{C_j} \otimes I_S + \ketbra{1}_{C_j} \otimes R_z^{\otimes n} (\beta_j)_S\right]
+	\label{eq:algorithm3}
+\end{align}
+where $\beta_j = \frac{2\pi}{N+1} 2^{j-1}$.
+Finally, IQFT(inverse quantum Fourier Transform) on register qubits and measure register qubits in the computational basis $\left\{ \ketbra{0}, \ketbra{1}, \cdots, \ketbra{N} \right\}$.
+
+Let me show a detailed process that how the state changes that enables measurement of Hamming weight.
+After the Eq. \ref{eq:algorithm2}, the state becomes:
+\begin{align}
+    \ket{y}_C &\rightarrow \bigotimes_{j=1}^k R_z(\gamma_j)_{C_j} \ket{y_k}_{C_k} \ldots \ket{y_1}_{C_1} \notag \\
+    &= \exp{\!\left( \sum_{j=1}^k \frac{\mathrm{i} \gamma_j}{2}(2y_j - 1) \right)} \ket{y_k}_{C_k} \ldots \ket{y_1}_{C_1} \notag \\
+    &= \exp\!\left( \sum_{j=1}^k \mathrm{i} \gamma_j y_j - \frac{\mathrm{i}}{2} \sum_{j=1}^k\gamma_j \right)\ket{y_k}_{C_k} \ldots \ket{y_1}_{C_1} \notag \\
+    &= \exp\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right) \ket{y}_C,
+\end{align}
+where $\Gamma = \sum_{j=1}^k \gamma_j$.
+Thus, 
+\begin{align}
+	\ket{\Psi} = \ket{\psi} \otimes \frac{1}{\sqrt{N+1}} \sum_{y=0}^N \exp{\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right)} \ket{y}_C
+\end{align} 
+Next, considering the action of controlled-Z gate in Eq. \ref{eq:algorithm3},
+\begin{align}
+	\ket{y}_C \ket{\psi}_S 
+    &\rightarrow \ket{y}_C R_z^{\otimes n}(y_1 \beta_1) \cdots R_z^{\otimes n}(y_k \beta_k) \ket{\psi}_S \notag \\
+    &= \ket{y}_C R_z^{\otimes n} (y_1\beta_1 + \cdots + y_k \beta_k) \ket{\psi}_S \notag \\
+    &= \ket{y}_C R_z^{\otimes n} \!\left(\sum_{j=1}^k y_j\beta_j \right) \ket{\psi}_S \notag \\
+    &= \ket{y}_C R_z^{\otimes n} \!\left(\vec{y}\cdot\vec{\beta} \right) \ket{\psi}_S,
+\end{align}
+thus, we have:
+\begin{align}
+	\ket{\Psi} = R_z^{\otimes n} \left(\vec{y}\cdot \vec{\beta}\right) \ket{\psi}_S \otimes \frac{1}{\sqrt{N+1}} \sum_{y=0}^N \exp{\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right)} \ket{y}_C
+\end{align}
+Here, 
+\begin{align}
+    \vec{\gamma}\cdot\vec{y} &= \sum_{j=1}^k \gamma_j y_j =\frac{n \pi}{N+1} \sum_{j=1}^k y_j 2^{j-1} = \frac{n \pi y}{N+1}, \\
+    \vec{\beta}\cdot\vec{y} &= \sum_{j=1}^k \beta_j y_j =\frac{2 \pi}{N+1} \sum_{j=1}^k y_j 2^{j-1} = \frac{2 \pi y}{N+1}.
+\end{align}
+\begin{equation}
+	\ket{\Psi} = \ket{y}_C \\ \otimes R_z^{\otimes n} \!\left( \frac{2 \pi y}{N+1}\right) \ket{\psi}_S \otimes \frac{1}{\sqrt{N+1}} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{y=0}^N \exp{\!\left( \frac{\mathrm{i}n\pi y}{N+1} \right)} .
+\end{equation}
+Noting that,
+\begin{equation}
+    R_z^{\otimes n}\!\left(\frac{2 \pi y}{N+1}\right) = \exp\! \left(\frac{-\mathrm{i}n \pi y}{N+1} \right) \sum_{x=0}^n \exp\! \left( \frac{2\pi \mathrm{i} xy}{N+1} \right) P_x.
+\end{equation}
+after the controlled-Z operation, we see the $\ket{\Psi}$ can be expressed as:
+\begin{equation}
+	\ket{\Psi} = \frac{1}{\sqrt{N+1}} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{y=0}^N \sum_{x=0}^n \exp\! \left( \frac{2\pi \mathrm{i} xy}{N+1} \right) P_x\ket{\psi}_S\ket{y}_C .
+\end{equation} 
+After applying IQFT on control register qubits, we have
+\begin{equation}
+	\frac{1}{N+1} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{z,y,x=0}^N  \exp\! \left( \frac{2\pi \mathrm{i} (x-z) y}{N+1} \right) \\ \ket{z}_C P_x \ket{\psi}_S.
+\end{equation}
+Here the summation, 
+\begin{align}
+	S = \sum_{y=0}^N  \exp\! \left( \frac{2\pi \mathrm{i} (x-z) y}{N+1} \right) = (N+1)\delta_{xz}
+\end{align}
+The state finally becomes:
+\begin{equation}
+	\exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{x=0}^N \ket{x}_C \otimes P_x\ket{\psi}_S
+\end{equation}
+Therefore, probability that we measure Hamming weight $a$ is:
+\begin{equation}
+	p_{a} = \left| P_{a} \ket{\psi} \right|^{2}
+	\label{eq:hamming_weight_probability}
+\end{equation}
+and the post-measurement state $\ket{\bar{\psi}}$ is:
+\begin{equation}
+	\ket{\bar{\psi}}  = \frac{P_{a} \ket{\psi}}{\sqrt{p_{a}}}.
+	\label{eq:post_measurement_state}
+\end{equation}
+
+
 \section*{Exercise 3}
 Use the function created in part 2 above to measure the Hamming weight of the following states:
 
-\subsubsection*{a) $\ket{11}$}
-\subsubsection*{b) $\ket{01}$}
-\subsubsection*{c) $\frac{1}{\sqrt{2}} \left(\ket{00} + \ket{11} \right)$}
-\subsubsection*{d) $\frac{1}{\sqrt{3}} \left( \ket{011} + \ket{101} + \ket{110} \right)$}
+\subsubsection*{a) $\ket{\psi} = \ket{11}$}
+The given Hamming weight is 2 the circuit execution results also shows the hamming weight is 2. 
+
+\subsubsection*{b) $\ket{\psi} = \ket{01}$}
+The given Hamming weight is 1 the circuit execution results also shows the hamming weight is 1. 
+\subsubsection*{c) $\ket{\psi} = \frac{1}{\sqrt{2}} \left(\ket{00} + \ket{11} \right)$}
+
+The given state has a probability of $\frac{1}{2}$ to be observed Hamming weight 0, and $\frac{1}{2}$ to be observed Hamming weight 2. 
+
+\subsubsection*{d) $\ket{\psi} = \frac{1}{\sqrt{3}} \left( \ket{011} + \ket{101} + \ket{110} \right)$}
+The given Hamming weight is 2 the circuit execution results also shows the hamming weight is 2.
+
 \subsubsection*{e) Explain the result in part c) above.}
 
+The given state has a probability of $\frac{1}{2}$ to be observed Hamming weight 0, and $\frac{1}{2}$ to be observed Hamming weight 2. 
+
 \section*{Exercise 4}
-Explain how the function in part 2 above can be used to prepare a Dicke state.
+\subsubsection*{Explain how the function in part 2 above can be used to prepare a Dicke state.}
+
+The post-measurement state can be used to prepare Dicke state. From the Eq. \ref{eq:post_measurement_state}, 
+we see that the initially given state projected on to the space of fixed Hamming weight $x$, therefore, becomes a linear combination computational bases of Hamming weight $x$.
+For example of three-qubit system, and $x=2$, the basis is $\{\ket{011}, \ket{101}, \ket{110}\}$. 
+Here Dicke state in $n$-qubit system and Hamming weight $k$ has form:
+\begin{equation}
+	\ket{D_{n,k}} = \frac{1}{\sqrt{{}_n C_{k}}} \sum_{i=1}^{{}_n C_{k}} \ket{e_{i}}
+\end{equation}
+where $\ket{e_i}$ is an element of basis of Hamming weight $k$ whose the number of basis is ${}_n C_{k}$.
+Considering the whole coefficients are equal, the initial state before the measuring Hamming weight also has the same coefficients in the basis of computational basis.
+Such state is just $+$ state:
+\begin{equation}
+	\ket{\psi} = \ket{++ \cdots +} = \frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n -1} \ket{i}
+\end{equation}
+where $i$ denotes the bit string. After measuring Hamming weight $k$, the post-measurement state $\ket{\bar{\psi}}$ becomes Dicke state $\ket{D_{n,k}}$.
 
 \section*{Exercise 5}
 Suppose we want to prepare the Dicke state with $n = 100$ and $k = 50$.
 
 \subsubsection*{What is the probability that the state will be measured?}
+Preparing + state, $\ket{\psi} = \ket{+}^{\otimes n}$, the probability that we measure Hamming weight $k$ is given in the Eq. \ref{eq:hamming_weight_probability}.
+Among the computational basis, $\{\ket{0}, \ket{1}, \cdots, \ket{2^n}-1\}$, the number of basis whose Hamming weight is ${}_n C_{k}$. Then,
+\begin{equation}
+	p_{k} = \left| P_{k} \ket{\psi} \right|^{2} = \left| \frac{{}_n C_{k}}{\sqrt{2^n}} \right|^{2} = \frac{({}_n C_k)^{2}}{2^n}.
+\end{equation}
+
+
 
 \subsubsection*{What is the minimum number of measurements required?}
 

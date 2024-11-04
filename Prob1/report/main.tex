@@ -232,12 +232,40 @@ def create_2q_target_circuit(qc_data):
 \end{minted}
 
 \subsection*{Part III}
-\paragraph{Describe how you could extend the protocol developed in part’s I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
+\paragraph{Describe how you could extend the protocol developed in part's I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
 
 \section*{Problem 2 : Graph States}
 
-\paragraph{a) }
-The graph state is generated using the provided code.
+In some cases, one can reconstruct a quantum state using only a limited number of measurements, regardless of how many qubits are in the quantum system. One of these cases is when the quantum states are generated using only “Clifford gates” (these are essentially quantum circuits that use only H,S, CNOT and CZ gates). In this problem, we will perform quantum state tomography on a subset of Clifford states known as “graph states”. A graph state on n qubits is any state which can be generated using a circuit of the form
+\begin{equation}
+	\ket{\psi} = \left(\Pi_{(i,j)\in G} CZ_{i,j}\right) H^{\otimes n} \ket{0}
+\end{equation}
+Where $CZ_{ij}$ is a controlled-Z gate applied on qubits $i$ and $j$, and ($i$,$j$) are edges of a hidden graph $G$. Different graphs, $G$, create different graph states. Our goal is to determine generate the graph state, $\ket{\psi}$, without knowing the specific graph which was used.
+\paragraph{a) Look into the properties of graph states.
+Graph states are stabilizer states with a specific structure. Describe the key properties of stabilizer states. Using the stabilizer properties of graph states, describe how one can perform tomography on graph states.}
+% Answer
+
+Graph states are a class of stabilizer states with a defined structure. Stabilizer states for $n$-qubit systems are uniquely characterized by $n$ stabilizers, each being an $N$-fold tensor product of Pauli operators (up to a factor of  $\{\pm 1, \pm i\}$).
+A stabilizer is an operator under which the state remains invariant, making the state a simultaneous $+1$ eigenstate of all $N$ stabilizer:
+\begin{equation}
+	S_{i} \ket{\psi} = \ket{\psi}
+\end{equation}
+For graph states, the stabilizer associated with each vertex $i$ has the form:
+\begin{equation}
+	S_{i} = X_{i} \Pi_{(i,j)\in G} Z_j
+\end{equation}
+where each stabilizer $S_i$ corresponds to a specific qubit $i$ and its neighbors in Graph $G$.
+
+Here is an important remark. 
+a graph state is a simultaneous $+1$ eigenstate of its stabilizers, meaning it can be represented as a linear combination of the stabilizer eigenbasis. 
+The stabilizer eigenbasis takes the form $\ket{\pm}_{i} \bigotimes_{j \neq i} \ket{b_{j}}$ with condition $b_{i} \bigoplus_{j \in (i,j)} b_{j} = 0$,
+imposed by the $+1$ eigenvalue requirement(where $+, -$ correspond to $0, 1$).
+
+To perform measurements in this basis for a given vertex $i$, apply a Hadamard gate $H$ to qubit $i$ before the measurement. 
+After collecting multiple measurement outcomes, identify the set of $j$ such that $b_{i} \bigoplus{j \in (i,j)} \oplus b_{j} = 0$.
+By repeating this process for each qubit, we can reconstruct the graph of the $n$-qubit system by running the circuit $n$ times.
+
+\paragraph{b) You may use the following code snippet to generate a random graph state}
 \begin{minted}[bgcolor=bg,
                frame=lines,
                framesep=2mm]{python}
@@ -257,6 +285,94 @@ def generate_clifford_circ(num_qubits, depth):
         s1s2 = {site_i, site_j}
         U_hidden.cz(site_i, site_j)
     return U_hidden
+\end{minted}
+\paragraph{
+You may set \texttt{num\_qubits} < 20. 
+Following the format of Problem 1, measure $U_{\text{hidden}}$ in <= 20 bases by appendix quantum circuits to $U_{\text{hidden}}$ and taking no more than 100 shots per basis. Then create a new circuit $U_{\text{gen}}$ such that
+$U_{\text{gen}}^{\dagger}U_{\text{hidden}} \ket{0} = \ket{0}$. 
+}
+
+As outlined in part a), I implemented the following algorithm:
+\paragraph{Phase 1} Apply a Hadamard gate to the $i$-th site after generating the graph state and before measurement.
+\paragraph{Phase 2} Extract the resulting bit strings from the measurements.
+\paragraph{Phase 3} Identify the set of $j$ such that $b_{i} \bigoplus{j \in (i,j)} \oplus b_{j} = 0$.
+Checking all possible sets of $(i,j)$ is feasible since the total number of combinations to check is $n2^{n-1}$, which amounts to at most $20 \times 2^19 \simeq 10485760$ per graph state.  
+
+Here are the implemented code:
+\begin{minted}[bgcolor=bg,
+	frame=lines,
+	framesep=2mm]{python}
+import itertools
+
+def GraphStateQST(U_hidden, num_qubits, num_shots=100):
+  hidden_circuit = U_hidden.copy()
+
+  graph = [] # G: set of (i,j)
+  for i in range(num_qubits):
+    # Phase 1
+    qc = qiskit.QuantumCircuit(num_qubits)
+    qc.h(i)
+    circ = hidden_circuit.compose(qc)
+    circ.measure_all()
+
+    # Phase 2
+    # Extract bit string
+    result = backend.run(circ, shots=num_shots)
+	          .result().data()["counts"]
+    result = [int(i,16) for i in result.keys()]
+
+    # Phase 3
+    # Generating possible set of (i,j)
+    qubit_index = [idx for idx in range(num_qubits)]
+    qubit_index.pop(i)
+    
+    for k in range(1, num_qubits):
+      for comb in itertools.combinations(qubit_index, k):
+        isConnected = xor_bits_at_positions(result, comb, i)
+        if isConnected:
+          for edge in comb:
+            graph.append({i, edge}) \\
+			  if {i, edge} not in graph else None
+  
+  return graph
+\end{minted}
+
+Here are the other functions, one to verify $b_{i} \bigoplus{j \in (i,j)} \oplus b_{j} = 0$ and the other for generating graph state from the given graph, represented by $U_\text{gen}$.
+\begin{minted}[bgcolor=bg,
+	frame=lines,
+	framesep=2mm]{python}
+# Phase 3
+def xor_bits_at_positions(nums, positions, base_location):
+  for num in nums:    
+    # Start with 0 for XOR accumulation
+    result = (num >> base_location) & 1
+    
+    # XOR each specified bit position
+    for pos in positions:
+      # Extract the bit at the current position 
+	  # and XOR it with the result
+      result ^= (num >> pos) & 1
+    
+    if result == 0:
+      continue
+    else:
+      return False
+
+  return True
+
+# Given graph G genreate graph state.
+def GraphState(num_qubits, graph):
+  U_gen = qiskit.QuantumCircuit(num_qubits)
+  for i in range(num_qubits):
+    U_gen.h(i)
+
+  for vertex in graph:
+    temp = list(vertex)
+    site_i = temp[0]
+    site_j = temp[1]
+    U_gen.cz(site_i, site_j)
+
+  return U_gen
 \end{minted}
 
 \section*{Problem 3 : Low Depth Brickwork Circuits}
