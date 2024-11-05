@@ -2,12 +2,27 @@
 
 \usepackage{physics}
 \usepackage{xcolor}
-
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{ragged2e}
+\usepackage{esint}
+\usepackage{wrapfig}
+\usepackage{mdframed}
+\usepackage{filecontents}
+\usepackage{lipsum} 
+\usepackage{pdflscape}
+\usepackage{lscape}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{minted}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-\usepackage{minted}
 \definecolor{bg}{HTML}{282828}
 \usemintedstyle{monokai}
 
@@ -25,111 +40,197 @@ The first class of states that we will consider are generic pure quantum states 
 
 In this first problem, we have a single qubit quantum state
 \begin{equation}
-	\ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1},
+  \ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1},
 \end{equation}
 where we can treat the unknown parameters $a,b$ and $\theta$ as real positive numbers with $|a|^2 + |b|^2 = 1$ and $\theta \in \left[ 0, 2\pi \right)$.
 
-\paragraph{a) Explain how one can determine the values of $a, b$ and $\theta$ by measuring the quantum state in different bases.}
+\subsubsection*{a) Explain how one can determine the values of $a, b$ and $\theta$ by measuring the quantum state in different bases.}
 
-\paragraph{b) Write a program in Qiskit which generates this unknown quantum state.}
+Start with the given single qubit pure state:
+\begin{equation}
+\ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1}
+\label{eq:pure_single}
+\end{equation}
+where $a, b, \theta$ are real parameter subject to $a^2 + b^2 =1$ and $0 \leq \theta < 2\pi$. 
+In order to determine these three parameter, it requires at least three measurement. 
+Our measurement is performed via POVM. There are detectors whose number is equal to the number of qubits. 
+In this scenerio, we perform $z$-basis projection measurement. Therefore, the POVM becomes $\left\{ \ket{0}\bra{0}, \ket{1}\bra{1}\right\}$, each corresponds to the presense and absence of the signal. 
+Let $\hat{m}_0, \hat{m}_1$ denote the estimated probability of occuring signals. 
+We can add additional operation $U$ before the measurement and after the computational stage(here, state preparation), we can perform measurement another POVM basis, $\left\{ U^{\dagger} \ket{0}\bra{0} U, U^{\dagger} \ket{1}\bra{1} U\right\}$.
+As we should run several circuits, ler $U_i$ denote the additional circuit to $i$-th circuit.
+
+In first measurement, to determine $a, b$, we can directly perform measurement without any unitary operation. That is $U_1 = I$, here. 
+Then, we see:
+\begin{align}
+  \hat{m}_0 &\simeq  \left| \bra{\psi}\ket{0} \right|^2 &= a^2 \\
+  \hat{m}_1 &\simeq  \left| \bra{\psi}\ket{1} \right|^2 &= b^2 
+\end{align}
+Therefore, we can estimate,
+\begin{align}
+  a &= \sqrt{\hat{m}_0} \\
+  b &= \sqrt{\hat{m}_1} 
+\end{align}
+On the other hand, we need two additional measurement. 
+Here let $U_2 = H$, where $H$ is a hadamard gate.
+\begin{equation}
+  H = \frac{1}{\sqrt{2}}
+  \begin{pmatrix}
+    1 & 1 \\
+    1 & -1
+  \end{pmatrix}.
+\end{equation}
+Then, our POVM becomes $\left\{ \ket{+}\bra{+}, \ket{-}\bra{-}\right\}$ where $\ket{+}, \ket{-}$ are the eigenstate of Pauli-X matrix whose eigenvalue is $1,-1$ for each.
+Here, let $\hat{m}_{+}, \hat{m}_{-}$ be the estimated probability of occuring signals.
+\begin{align}
+  \hat{m}_{+} &\simeq  \left| \bra{\psi}\ket{+} \right|^2 &= \left| \frac{a + b e^{i\theta}}{2} \right|^2 &= \frac{1 + 2ab\cos\theta}{2}  \\
+  \hat{m}_{-} &\simeq  \left| \bra{\psi}\ket{-} \right|^2 &= \left| \frac{a - b e^{i\theta}}{2} \right|^2 &= \frac{1 - 2ab\cos\theta}{2} 
+\end{align}
+Or,
+\begin{equation}
+  \cos\theta = \frac{\hat{m}_{+} - \hat{m}_{-}}{2ab}
+\end{equation}
+Here, it is not enough yet. As there is a degree of freedom choosing a sign of $\sin\theta$. 
+Finally, let $U_3 = S H$ where $S$ is S gate.
+\begin{equation}
+  S = \begin{pmatrix}
+    1 & 0 \\
+    0 & i 
+  \end{pmatrix}.
+\end{equation}
+Then our POVM becomes $\left\{ \ket{i}\bra{i}, \ket{-i}\bra{-i}\right\}$ where $\ket{i}, \ket{-i}$ are the eigenstate of Pauli-Y matrix whose eigenvalue is $1,-1$ for each.
+Here, let $\hat{m}_{i}, \hat{m}_{-i}$ be the estimated probability of occuring signals.
+\begin{align}
+  \hat{m}_{i} &\simeq  \left| \bra{\psi}\ket{i} \right|^2 &= \left| \frac{a + b e^{i(\theta + \frac{\pi}{2})}}{2} \right|^2 &= \frac{1 + 2ab\sin\theta}{2}  \\
+  \hat{m}_{-i} &\simeq  \left| \bra{\psi}\ket{-i} \right|^2 &= \left| \frac{a - b e^{i\theta  + \frac{\pi}{2}}}{2} \right|^2 &= \frac{1 - 2ab\sin\theta}{2}  
+\end{align}
+Or,
+\begin{equation}
+  \sin\theta = \frac{\hat{m}_{i} - \hat{m}_{-i}}{2ab}.
+\end{equation}
+Therefore, we can determine $a, b$ and $\theta$. 
+\begin{align}
+  a &= \sqrt{\hat{m}_0} \\
+  b &= \sqrt{\hat{m}_1} \\
+  \theta &= \arcsin\frac{\hat{m}_{i} - \hat{m}_{-i}}{2ab} = \arccos \frac{\hat{m}_{+} - \hat{m}_{-}}{2ab}
+\end{align}
+
+\subsubsection*{b) Write a program in Qiskit which generates this unknown quantum state.}
 
 
 To generate a random single qubit quantum state we use a circuit $U_{\text{hidden}}$, so that $\ket{\psi} = U_{\text{hidden}} \ket{0}$.
 I used the following provided code, to generate random state.
 \begin{minted}[bgcolor=bg,
-               frame=lines,
-               framesep=2mm]{python}
+              frame=lines,
+              framesep=2mm]{python}
 def create_1q_target_circuit(qc_data):
     qc = qiskit.QuantumCircuit(1)
     qc.ry(qc_data[0],0)
     qc.rz(qc_data[1],0)
     return qc
 \end{minted}
-The given state can be written as:
-\begin{equation}
-	\ket{\psi} = a\ket{0} + b e^{i\theta} \ket{1}
-	\label{eq:single_pure_state}
-\end{equation}
-where $a, b, \theta$ are unknown real parameter subject to $a^2 + b^2 =1$ and $0 \leq \theta < 2\pi$. 
-In order to determine these three parameter, it requires at least three measurement. 
 
-Our measurement is performed via POVM. There are detectors whose number is equal to the number of qubits. 
-In this scenerio, we perform $z$-basis projection measurement. Therefore, the POVM becomes $\left\{ \ket{0}\bra{0}, \ket{1}\bra{1}\right\}$, each corresponds to the presense of signal or not. 
+As discussed in a), we can determine the state in Eq. \ref{eq:pure_single} via three measurements.
+To reconstruct the statevector, I implemented the following code. 
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def SingleQubitQST(U_hidden, num_shots:int=100):
+  hidden_circuit = U_hidden.copy()
+  
+  qc1 = qiskit.QuantumCircuit(1)
+  circ1 = hidden_circuit.compose(qc1)
+  circ1.measure_all()
+  #print(circ1.draw())
+  
+  qc2 = qiskit.QuantumCircuit(1)
+  qc2.h(0)
+  circ2 = hidden_circuit.compose(qc2)
+  circ2.measure_all()
+  #print(circ2.draw())
+  
+  qc3 = qiskit.QuantumCircuit(1)
+  qc3.s(0)
+  qc3.h(0)
+  circ3 = hidden_circuit.compose(qc3)
+  circ3.measure_all()
+  #print(circ3.draw())
+  
+  result1 = MeasurementResultHandler(backend
+          .run(circ1, shots=num_shots)
+          .result().data()["counts"], 1, num_shots)
+  result2 = MeasurementResultHandler(backend
+          .run(circ2, shots=num_shots)
+          .result().data()["counts"], 1, num_shots)
+  result3 = MeasurementResultHandler(backend
+          .run(circ3, shots=num_shots)
+          .result().data()["counts"], 1, num_shots)
 
-Let $\hat{m}_0, \hat{m}_1$ denote the estimated probability of occuring signals. 
-We can add another operation $U$ before the measurement and after the computational stage(here, state preparation), we can perform measurement another POVM basis, $\left\{ U^{\dagger} \ket{0}\bra{0} U, U^{\dagger} \ket{1}\bra{1} U\right\}$.
+  m0 = result1.get("0x0"); m1 = result1.get("0x1")
+  phi = np.arctan2(np.sqrt(m1), np.sqrt(m0))
+  phi = phi if phi > 0 else phi + 2*np.pi
+  statevector = np.array([np.cos(phi),
+                          np.sin(phi)], 
+                          dtype=np.complex64)
 
-In first measurement, to determine $a, b$, we can directly perform measurement without any unitary operation. That is $U^1 = I$, here. 
-Then, we see:
-\begin{align}
-	\hat{m}_0 &\simeq  \left| \bra{\psi}\ket{0} \right|^2 &= a^2 \\
-	\hat{m}_1 &\simeq  \left| \bra{\psi}\ket{1} \right|^2 &= b^2 \\
-\end{align}
-Therefore, we can estimate,
-\begin{align}
-	a &= \sqrt{\hat{m}_0} \\
-	b &= \sqrt{\hat{m}_1} \\
-\end{align}
-On the other hand, we need two additional measurement. 
-Here let $U_2 = H$, where $H$ is a hadamard gate.
-\begin{equation}
-	H = \frac{1}{\sqrt{2}}
-	\begin{pmatrix}
-		1 & 1 \\
-		1 & -1
-	\end{pmatrix}.
-\end{equation}
-Then, our POVM becomes $\left\{ \ket{+}\bra{+}, \ket{-}\bra{-}\right\}$ where $\ket{+}, \ket{-}$ are the eigenstate of Pauli-X matrix whose eigenvalue is $1,-1$ for each.
-Here, let $\hat{m}_{+}, \hat{m}_{-}$ be the estimated probability of occuring signals.
-\begin{align}
-	\hat{m}_{+} &\simeq  \left| \bra{\psi}\ket{+} \right|^2 &= \left| \frac{a + b e^{i\theta}}{2} \right|^2 &= \frac{1 + 2ab\cos\theta}{2}  \\
-	\hat{m}_{-} &\simeq  \left| \bra{\psi}\ket{-} \right|^2 &= \left| \frac{a - b e^{i\theta}}{2} \right|^2 &= \frac{1 - 2ab\cos\theta}{2} 
-\end{align}
-Or,
-\begin{equation}
-	\cos\theta = \frac{\hat{m}_{+} - \hat{m}_{-}}{2ab}
-\end{equation}
-Here, it is not enough yet, as there is a degree of freedom choosing a sign of $\sin\theta$. 
-Finally, let $U_3 = S H$ where $S$ is S gate.
-\begin{equation}
-	S = \begin{pmatrix}
-		1 & 0 \\
-		0 & i 
-	\end{pmatrix}.
-\end{equation}
-Then our POVM becomes $\left\{ \ket{i}\bra{i}, \ket{-i}\bra{-i}\right\}$ where $\ket{i}, \ket{-i}$ are the eigenstate of Pauli-Y matrix whose eigenvalue is $1,-1$ for each.
-Here, let $\hat{m}_{i}, \hat{m}_{-i}$ be the estimated probability of occuring signals.
-\begin{align}
-	\hat{m}_{i} &\simeq  \left| \bra{\psi}\ket{i} \right|^2 &= \left| \frac{a + b e^{i(\theta + \frac{\pi}{2})}}{2} \right|^2 &= \frac{1 + 2ab\sin\theta}{2}  \\
-	\hat{m}_{-i} &\simeq  \left| \bra{\psi}\ket{-i} \right|^2 &= \left| \frac{a - b e^{i\theta  + \frac{\pi}{2}}}{2} \right|^2 &= \frac{1 - 2ab\sin\theta}{2}  
-\end{align}
-Or,
-\begin{equation}
-	\sin\theta = \frac{\hat{m}_{i} - \hat{m}_{-i}}{2ab}
-\end{equation}
+  m_p = result2.get("0x0"); m_m = result2.get("0x1")
+  cos = (m_p - m_m)/(2*np.cos(phi)*np.sin(phi))
 
-Then, we determine circuit ansatz and the circuit parameter. 
+  m_pi = result3.get("0x0"); m_mi = result3.get("0x1")
+  sin = (-m_pi + m_mi)/(2*np.cos(phi)*np.sin(phi))
+
+  temp = np.array([cos, sin])
+
+  cos = cos / np.linalg.norm(temp)
+  sin = sin / np.linalg.norm(temp)
+  print(circ1.draw())
+  theta = np.arctan2(sin, cos)
+  theta = theta if theta > 0 else theta + 2*np.pi
+
+  statevector[1] *= np.exp(1j*theta)
+  circuit_parameter = np.array([2*phi, theta])
+
+  return statevector, circuit_parameter
+\end{minted}
+Then, we determine the circuit parameters from the reconstructed state vector. 
 Using ZYZ decomposition, we can represent all the unitary operation on a single qubit. 
-Here, for state preparation, we only need RY and RZ gate. The state would be 
+Here, for state preparation, we only need RY and RZ gate\cite{}. The state would be 
 \begin{equation}
-	\ket{\psi} = \cos \left( \frac{\phi}{2} \right) \ket{0} + e^{i\theta} \sin \left( \frac{\phi}{2} \right)\ket{1}.
-\end{equation} 
-Comparing this with the Eq. \ref{eq:single_pure_state}, we can determine circuit parameter $\theta, \phi$. 
+  \ket{\psi} = R_z (\beta) R_y (\alpha) = \cos \left( \frac{\alpha}{2} \right) \ket{0} + e^{i\beta} \sin \left( \frac{\alpha}{2} \right)\ket{1}.
+\end{equation}
+without global phase.
+Comparing this with the Eq. \ref{eq:pure_single}, we can determine circuit parameter $\alpha, \beta$. 
 \begin{align}
-	a &= \cos \left( \frac{\phi}{2} \right) \\
-	b &= \sin \left( \frac{\phi}{2} \right) \\
-	\theta &= \theta
+  \alpha &= 2\arccos a = 2\arcsin b \\
+  \beta &= \theta
 \end{align}
+The follwing function performs determining circuit parameters and generating $U_{\text{gen}}$.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def SingleQubitCircuit(statevector):
+  cos = np.linalg.norm(statevector[0])
+  sin = np.linalg.norm(statevector[1])
+  phi = np.arctan2(sin,cos)
+  theta = (np.log(statevector[1]/ 
+          np.linalg.norm(statevector[1]))*-1j).real
+
+  U_gen = qiskit.QuantumCircuit(1)
+  U_gen.ry(2*phi,0)
+  U_gen.rz(theta,0)
+
+  return U_gen
+\end{minted}
+
 To evaluate this reconstruction scheme, the following provided code is used.
 \begin{minted}[bgcolor=bg,
-               frame=lines,
-               framesep=2mm]{python}
+              frame=lines,
+              framesep=2mm]{python}
 backend2 = Aer.get_backend("statevector_simulator")
 def give_score(U_hidden, U_gen):
-	qc = U_hidden.compose(U_gen.inverse())
-	result = backend2.run(qc).result()
-	score = result.get_statevector()[0]
-	return np.abs(score)
+  qc = U_hidden.compose(U_gen.inverse())
+  result = backend2.run(qc).result()
+  score = result.get_statevector()[0]
+  return np.abs(score)
 \end{minted}
 
 I conducted some simulation with this code. 
@@ -137,17 +238,19 @@ I conducted some simulation with this code.
 \subsection*{Part II}
 We will now increase the complexity by reconstructing a generic two-qubit quantum state.
 \begin{equation}
-	\ket{\psi} = a\ket{00} + b\ket{01} + c\ket{10} + \ket{11}
+  \ket{\psi} = a\ket{00} + b\ket{01} + c\ket{10} + \ket{11}
 \end{equation}
 where $|a|^2 + |b|^2 + |c|^2 + |d|^2 = 1$.
 
 \paragraph{a) First, consider the case where all amplitudes are real numbers. Explain how you can measure both the magnitude and sign of the unknown amplitudes, measuring in as few different bases as possible.}
 
+
+
 \paragraph{b) Now, explain how you would adapt this measurement protocol if the amplitudes $a,b,c,d$ are complex numbers. Note, that we can only reconstruct the wavefunction up to a global phase, so that we can always consider $a$ to be a positive real number.}
 
 The two-qubit pure state can be written as:
 \begin{equation}
-	\ket{\psi} = a\ket{00} + b e^{i\theta_{b}} \ket{01} + c e^{i\theta_{c}} \ket{10} + d e^{i\theta_{b}} \ket{11}
+  \ket{\psi} = a\ket{00} + b e^{i\theta_{b}} \ket{01} + c e^{i\theta_{c}} \ket{10} + d e^{i\theta_{b}} \ket{11}
 \end{equation}
 where $a, b, c$ and $d$ are real posivive numbers $\theta_b , \theta_c , \theta_d$ are real numbers subject to $0 \le \theta_{b} , \theta_{c} , \theta_{d} <2\pi $ without loss of generality.
 If the parameters are subjected to real numbers, it seems sufficient to idenify all the parameters $a, b, c$ and $d$ with running two circuits. 
@@ -155,68 +258,70 @@ First, we run circuit without any additional operation, $U=I$.
 Then our POVM bases are $\left\{ \ket{00}\bra{00}, \ket{01}\bra{01}, \ket{10}\bra{10}, \ket{11}\bra{11} \right\}$, which directly reproduce $a^2 , b^2 , c^2$ and $d^2$.
 That is,
 \begin{align}
-	\hat{m}_{00} &\simeq \left| \bra{\psi}\ket{00} \right|^2 &= a^2 \\ 
-	\hat{m}_{01} &\simeq \left| \bra{\psi}\ket{01} \right|^2 &= b^2 \\ 
-	\hat{m}_{10} &\simeq \left| \bra{\psi}\ket{10} \right|^2 &= c^2 \\ 
-	\hat{m}_{11} &\simeq \left| \bra{\psi}\ket{11} \right|^2 &= d^2  
+  \hat{m}_{00} &\simeq \left| \bra{\psi}\ket{00} \right|^2 &= a^2 \\ 
+  \hat{m}_{01} &\simeq \left| \bra{\psi}\ket{01} \right|^2 &= b^2 \\ 
+  \hat{m}_{10} &\simeq \left| \bra{\psi}\ket{10} \right|^2 &= c^2 \\ 
+  \hat{m}_{11} &\simeq \left| \bra{\psi}\ket{11} \right|^2 &= d^2  
 \end{align}
 Next, using Hadamard gate on first qubit, we have:
 \begin{align}
-	\hat{m}_{+0} &\simeq \left| \bra{\psi}\ket{+0} \right|^2 &= \left| \frac{a+c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{+1} &\simeq \left| \bra{\psi}\ket{+1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{-0} &\simeq \left| \bra{\psi}\ket{-0} \right|^2 &= \left| \frac{a-c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{-1} &\simeq \left| \bra{\psi}\ket{-1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d}}{\sqrt{2}}\right|^2
+  \hat{m}_{+0} &\simeq \left| \bra{\psi}\ket{+0} \right|^2 &= \left| \frac{a+c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{+1} &\simeq \left| \bra{\psi}\ket{+1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{-0} &\simeq \left| \bra{\psi}\ket{-0} \right|^2 &= \left| \frac{a-c e^{i\theta_c}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{-1} &\simeq \left| \bra{\psi}\ket{-1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d}}{\sqrt{2}}\right|^2
 \end{align}
 Then, we see:
 \begin{align}
-	\cos\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
-	\cos(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+  \cos\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+  \cos(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
 \end{align}
 With Hadamard gate and S gate on first qubit, we see:
 \begin{align}
-	\hat{m}_{i0} &\simeq \left| \bra{\psi}\ket{i0} \right|^2 &= \left| \frac{a+c e^{i\theta_c + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{i1} &\simeq \left| \bra{\psi}\ket{i1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{-i0} &\simeq \left| \bra{\psi}\ket{-i0} \right|^2 &= \left| \frac{a-c e^{i\theta_c - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{-i1} &\simeq \left| \bra{\psi}\ket{-i1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
+  \hat{m}_{i0} &\simeq \left| \bra{\psi}\ket{i0} \right|^2 &= \left| \frac{a+c e^{i\theta_c + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{i1} &\simeq \left| \bra{\psi}\ket{i1} \right|^2 &= \left| \frac{b e^{i\theta_b}+d e^{i\theta_d + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{-i0} &\simeq \left| \bra{\psi}\ket{-i0} \right|^2 &= \left| \frac{a-c e^{i\theta_c - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{-i1} &\simeq \left| \bra{\psi}\ket{-i1} \right|^2 &= \left| \frac{b e^{i\theta_b}-d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
 \end{align}
 Then, 
 \begin{align}
-	\sin\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
-	\sin(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+  \sin\theta_{c} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+  \sin(\theta_{b} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
 \end{align}
 Also, using Hadamard gate on second qubit, we have:
 \begin{align}
-	\hat{m}_{0+} &\simeq \left| \bra{\psi}\ket{0+} \right|^2 &= \left| \frac{a+b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{0-} &\simeq \left| \bra{\psi}\ket{0-} \right|^2 &= \left| \frac{a -b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{1+} &\simeq \left| \bra{\psi}\ket{1+} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{1-} &\simeq \left| \bra{\psi}\ket{1-} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d}}{\sqrt{2}}\right|^2
+  \hat{m}_{0+} &\simeq \left| \bra{\psi}\ket{0+} \right|^2 &= \left| \frac{a+b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{0-} &\simeq \left| \bra{\psi}\ket{0-} \right|^2 &= \left| \frac{a -b e^{i\theta_b}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{1+} &\simeq \left| \bra{\psi}\ket{1+} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{1-} &\simeq \left| \bra{\psi}\ket{1-} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d}}{\sqrt{2}}\right|^2
 \end{align}
 Then, we see:
 \begin{align}
-	\cos\theta_{b} &= \frac{\hat{m}_{0+} - \hat{m}_{0-}}{2}\\
-	\cos(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{1+} - \hat{m}_{1-}}{2}\\
+  \cos\theta_{b} &= \frac{\hat{m}_{0+} - \hat{m}_{0-}}{2}\\
+  \cos(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{1+} - \hat{m}_{1-}}{2}\\
 \end{align}
 With Hadamard gate and S gate on second qubit, we see:
 \begin{align}
-	\hat{m}_{0i} &\simeq \left| \bra{\psi}\ket{0i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{1i} &\simeq \left| \bra{\psi}\ket{1i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
-	\hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
+  \hat{m}_{0i} &\simeq \left| \bra{\psi}\ket{0i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{1i} &\simeq \left| \bra{\psi}\ket{1i} \right|^2 &= \left| \frac{a+b e^{i\theta_b + \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c} +d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2 \\ 
+  \hat{m}_{0-i} &\simeq \left| \bra{\psi}\ket{0-i} \right|^2 &= \left| \frac{c e^{i\theta_c}- d e^{i\theta_d - \frac{\pi}{2}}}{\sqrt{2}}\right|^2
 \end{align}
 Then, 
 \begin{align}
-	\sin\theta_{b} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
-	\sin(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
+  \sin\theta_{b} &= \frac{\hat{m}_{+0} - \hat{m}_{-0}}{2}\\
+  \sin(\theta_{c} - \theta_{d}) &= \frac{\hat{m}_{+1} - \hat{m}_{-1}}{2}\\
 \end{align}
-Now we can determine $\theta_{b}, \theta_{c}$ $\theta_{d}$.
+Now we can determine $\theta_{b}, \theta_{c}$, $\theta_{d}$.
+
+\paragraph{Error Handling}
 
 
 \paragraph{c) Now write a program in Qiskit which will generate this unknown quantum state. Use the same format as for part I.}
 
 To generate random state the following provided code is used:
 \begin{minted}[bgcolor=bg,
-               frame=lines,
-               framesep=2mm]{python}
+              frame=lines,
+              framesep=2mm]{python}
 def create_2q_target_circuit(qc_data):
     qc = qiskit.QuantumCircuit(2)
     for i in range(2):
@@ -231,14 +336,213 @@ def create_2q_target_circuit(qc_data):
     return qc
 \end{minted}
 
+As discussed in b), we can reconstruct state vector with 5 measurements. 
+I implemented the following code to reconstruct state vector.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def TwoQubitQST(U_hidden, num_shots:int=100):
+  hidden_circuit = U_hidden.copy()
+\end{minted}
+
+Now we should determine circuit parameters and ansatz. 
+It is known that one CNOT gate is enough to prepare two qubit state. So I used the following circuit ansatz.
+
+For bipartite pure state $\ket{\psi}$, there exist orthonormal state $\ket{i}$ the state for the first party, 
+$\ket{j}$ the state for the other party such that
+\begin{equation}
+  \ket{\psi} = \sum_{i}\lambda_{i} \ket{i_1}\otimes\ket{i_2}
+  \label{eq:schmidt_decomposition}
+\end{equation}
+where $\lambda_i$ is non-negative real numbers with $\sum_i \lambda_i^2 = 1$. It is known to schmidt decomposition. 
+By the singular value decomposition, $\lambda = U D V$, where $D$ is a diagonal matrix with non-negative elements, and $U, V$ are unitary matrices. 
+Then,
+\begin{equation}
+  \ket{\psi} = \sum_{i,j,k} U_{ji}D_{ii}V_{ik} \ket{j}\ket{k}.
+\end{equation}
+Defining $\ket{i_1} = \sum_{j}U_{ji}\ket{j}$, $\ket{i_2} = \sum_{j}V_{ik}\ket{k}$ and $\lambda_{i} = d_{ii}$, we have the same form of Eq. \ref{eq:schmidt_decomposition}.
+But here, for convenience in circuit construction, make $\bra{0}\ket{i_1}$ and $\bra{0}\ket{i_2}$  be real number. 
+It can be done by extracting global phase out, then $\lambda_{i}$ is no longer real number.
+Also, we can extract global phase out, $\lambda_{i}^{\prime} = \lambda_{i} \frac{|\lambda_{0}|}{\lambda_{0}}$ so that $\lambda^{\prime}_{0}$ to be real number.
+
+Here is a strategy to make circuit ansatz and determine circuit parameter. 
+From the initial state, $\ket{\psi} = \ket{00}$, by using local unitary gate on the first qubit, we have:
+\begin{equation}
+  \ket{\psi}\rightarrow \lambda^{\prime}_0 \ket{00} + \lambda^{\prime}_{1} \ket{01}
+\end{equation}
+Then, apply CNOT gate.
+\begin{equation}
+  \ket{\psi}\rightarrow \lambda^{\prime}_0 \ket{00} + \lambda^{\prime}_{1} \ket{11}
+\end{equation}
+Then, applying local unitary operation $U_0 , U_1 $ on each qubit, such that
+\begin{align}
+  U_0 \ket{0} \rightarrow \ket{0} && U_0 \ket{1} \rightarrow \ket{0} \\
+  U_1 \ket{0} \rightarrow \ket{0} && U_1 \ket{1} \rightarrow \ket{0}
+\end{align}
+Finally, the state becomes our reconstructed state in schmidt decomposition form in Eq. \ref{eq:schmidt_decomposition}.
+
+Now local unitary matters. 
+First, we need to make unitary, 
+$\ket{0_{1}} \rightarrow \lambda^{\prime}_0 \ket{0} + \lambda^{\prime}_{1} \ket{1}$.
+This can be done YZ decomposition, as done in Part I. 
+\begin{align}
+  R_{z}(\beta_{1}) R_{y}(\alpha_{1})\ket{0} = \cos\frac{\alpha}{2} \ket{0} + e^{i\beta} \sin\frac{\alpha}{2}
+\end{align}
+Then, we have
+\begin{align}
+  \alpha_{1} &= 2\arccos \lambda^{\prime}_{0} = 2\arcsin |\lambda^{\prime}_{1}| \\
+  \beta_{1}  &= -i \ln \frac{\lambda_{1}}{|\lambda_{1}|}.
+  \label{eq:2_qst_circuit_para1}
+\end{align}
+Next, two local unitary $U_{1}, U_{2}$ should be implemented.
+However, as $\ket{0}$ and $\ket{1}$ orthonormal basis, it can also implemented as if we are doing state preparation, by using Ry, Rz gate. 
+We made  $\bra{0}\ket{i_1}$ and $\bra{0}\ket{i_2}$  be real number, so 
+\begin{align}
+  \alpha_{2} &= 2\arccos \bra{0}\ket{i_1} \\
+  \beta_{2}  &= -i \ln \frac{\bra{1}\ket{i_1}}{|\bra{1}\ket{i_1}|} \\
+  \alpha_{3} &= 2\arccos \bra{0}\ket{i_2} \\
+  \beta_{3}  &= -i \ln \frac{\bra{1}\ket{i_2}}{|\bra{1}\ket{i_2}|}
+  \label{eq:2_qst_circuit_para2}
+\end{align}
+
+Therefore, my algorithm procedure is as following:
+\paragraph{Phase 1. }
+Perform Schmidt decomposition on reconstructed vector. Numpy has schmidt decomposition method.
+The column vector in $U$ becomes the basis $\ket{i_1}$ and row vector in $V^{\dagger}$ are the basis $\ket{i_2}$.
+\paragraph{Phase 2. }
+Extract global phase for all schmidt decomposed basis so that the first element of the basis vector to be real. 
+It can done by dividing global phase to state vector and multiplying it to $\lambda_{i}$.
+And extract global phase one more time, so that $\lambda_{0}^{\prime}$ be real.
+\paragraph{Phase 3. }
+Calculate circuit parameters, by using Eq. \ref{eq:2_qst_circuit_para1} and Eq. \ref{eq:2_qst_circuit_para2}. 
+\paragraph{Phase 4. }
+Construct circuit. 
+
+\paragraph{Exception}
+
+
+% TODO : one schmidt coefficient. 
+
 \subsection*{Part III}
-\paragraph{Describe how you could extend the protocol developed in part's I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
+\subsubsection*{Describe how you could extend the protocol developed in part's I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
+
+The reconstruction of quantum state constitutes two parts: state reconstruction and circuit construction. 
+An arbitrary $n$-qubit pure state can be written as:
+\begin{equation}
+  \ket{\psi} = \sum_{i=0}^{2^n -1} a_{i}e^{\theta_{i}} \ket{i}
+\end{equation}
+where $i$ denotes bit stirng, $a_{i}$ are real positive number under the constraint $\sum_{i} |a_{i}|^{2} = 1$, $0\le \theta_{i} < 2\pi$ and $\theta_{0} =0$ without loss of generality.
+First, state reconstruction can be done two step, extract amplitudes and measure phase. 
+The amplitudes $a_{i}$ can be easily extracted by measuring on a basis $\{ \ketbra{0}, \ketbra{1}, \cdots, \ketbra{2^n -1} \}$, that is, without any additional operation before measurement and after state preparation.
+The phase difference between $\ket{i}$ and $\ket{j}$, where hamming distance between $i$ and $j$ is 1, can be conducted by using additional unitary operation on $i$-th qubit, $U=H_{i}$ and $U=S_{i} H_{i}$. 
+Then we can determine phase difference $\theta_{i} - \theta_{j}$ as done in Part I and Part II.
+In order to determine whole phase difference, such measurement, with additional unitary operation on $i$-th qubit, $U=H_{i}$ and $U=S_{i} H_{i}$, should be done for all qubits. 
+Therefore, we need $2n+1$ circuits to perform QST on $n$-qubit pure state. 
+
+Once state vector is reconstructed, we can determine circuit ansatz and parameters.
+Up to three qubits, there are well known ansatz to perpare arbitrary states. 
+One and two qubit cases are discussed above Part I and Part II. 
+For three qubits, it is well known that three CNOT gate is sufficient for preparation of arbitrary three-qubit pure state.
+Or this reference can be another example\cite{perdomo2022preparation3qubitstates}.
+For $n \geq 4$, here are strategy\cite{Quantum-state preparation with universal gate decompositions}. 
+\paragraph{Phase 1}
+If $n$ is an even number, $n=2k$, then, by Schmidt decomposition, we have:
+\begin{equation}
+  \ket{\psi} = \sum_{i=0}^{2^k -1} \alpha_{i} \ket{i_1}\ket{i_2}
+\end{equation}
+\paragraph{Phase 2}
+In a similar way to the Part II, apply local unitary gate to initial state, $ket{\psi} = ket{0}^{\otimes n}$, such that
+\begin{align}
+  ket{\psi} \rightarrow \left(\sum_{i=0}^{2^k -1} \alpha_{i} \ket{i} \right) \otimes \ket{0}^{\otimes k}.
+\end{align}
+\paragraph{Phase 3}
+Next, we perform $k$ CNOT gates with qubit $i$(from $i=0$ to $i=k-1$) as controlled qubit and qubit $i+k$ as target qubit.
+\begin{equation}
+  \ket{\psi} \rightarrow  \sum_{i=0}^{2^k -1} \alpha_{i} \ket{i}\ket{i}
+\end{equation}
+\paragraph{Phase 4}
+Then, apply $k$-qubit unitary operation $U_1 , U_2$ on each party, respectively such that
+\begin{align}
+  U_1 \ket{i} = \ket{i} && U_2 \ket{i} = \ket{i} 
+\end{align}
+In the case of $n=2k-1$, we divide the system into bipartite state by $k-1$ qubits and $k$ qubits. 
+\paragraph{Phase 1 }From schmidt decomposition, we have:
+\begin{equation}
+  \ket{\psi} = \sum_{i=0}^{2^{k-1} -1} \alpha_{i} \ket{i_1}\ket{i_2}.
+\end{equation}
+\paragraph{Phase 2}
+Apply local unitary gate to initial state, $ket{\psi} = ket{0}^{\otimes n}$, such that
+\begin{align}
+  ket{\psi} \rightarrow \left(\sum_{i=0}^{2^{k-1} -1} \alpha_{i} \ket{i} \right) \otimes \ket{0}^{\otimes k}.
+\end{align}
+\paragraph{Phase 3}
+Apply $k$ CNOT gates with qubit $i$(from $i=0$ to $i=k-2$) as controlled qubit and qubit $i+k$ as target qubit.
+\begin{equation}
+  \ket{\psi} \rightarrow  \sum_{i=0}^{2^{k-1} -1} \alpha_{i} \ket{i}\ket{i}
+\end{equation}
+Here the last qubit state remains $\ket{0}$ at this stage, here comes the difference. 
+\paragraph{Phase 4}
+Then, apply $k-1$-qubit, $k$-qubit unitary operation $U_1 , U_2$ on each party, respectively such that
+\begin{align}
+  U_1 \ket{i} = \ket{i} && U_2 \ket{i} = \ket{i} 
+\end{align}
+
+The Phase 1, 2 corresponds to the state preparation. So we can perform state preparation reculsively. 
+The problem is making $k$-qubit unitary operation. This procedure is well introduced in the follwing reference\cite{PhysRevA.93.032318}.
+To breifly explain, there exist a representation for $k$-qubit unitary operation $U\in \mathbb{C}^{2^k \times 2^k}$
+\begin{equation}
+  U = 
+  \begin{pmatrix}
+    A_{0} & 0 \\
+    0 & A_{1}
+  \end{pmatrix}
+  \begin{pmatrix}
+    C & -S \\
+    S & C
+  \end{pmatrix}
+  \begin{pmatrix}
+    B_{0} & 0 \\
+    0 & B_{1}
+  \end{pmatrix}
+\end{equation}
+where $A_0 , A_1 , B_0 , B_1 \in \mathbb{C}^{2^k \times 2^k}$ are unitary matrices and $C, S$ are real diagonal matrics such that $C^2 + S^2 = 1$.
+This decomposition is known as Cosine-Sine Decomposition(CSD). 
+CSD can be performed in following ways. $U$ is partitioned into four equally sized blocks:
+\begin{equation}
+  U = \begin{pmatrix}
+    U_{00} & U_{01} \\
+    U_{10} & U_{11}
+  \end{pmatrix}
+\end{equation}
+Then there exist unitary matrices $A_0 , A_1 , B_0 , B_1$ such that
+\begin{equation}
+  U = 
+  \begin{pmatrix}
+    A_{0} & 0 \\
+    0 & A_{1}
+  \end{pmatrix}
+  \begin{pmatrix}
+    C & -S \\
+    S & C
+  \end{pmatrix}
+  \begin{pmatrix}
+    B_{0} & 0 \\
+    0 & B_{1}
+  \end{pmatrix}.
+\end{equation}
+And it is actually performing four singular value decomposition.
+\begin{align}
+  U_{00} &= A_{0} C B_{0}^{\dagger} \\
+  U_{01} &= A_{0} S B_{1}^{\dagger} \\
+  U_{10} &= A_{1} (-S) B_{0}^{\dagger} \\
+  U_{11} &= A_{1} C B_{1}^{\dagger} 
+\end{align}
 
 \section*{Problem 2 : Graph States}
 
 In some cases, one can reconstruct a quantum state using only a limited number of measurements, regardless of how many qubits are in the quantum system. One of these cases is when the quantum states are generated using only “Clifford gates” (these are essentially quantum circuits that use only H,S, CNOT and CZ gates). In this problem, we will perform quantum state tomography on a subset of Clifford states known as “graph states”. A graph state on n qubits is any state which can be generated using a circuit of the form
 \begin{equation}
-	\ket{\psi} = \left(\Pi_{(i,j)\in G} CZ_{i,j}\right) H^{\otimes n} \ket{0}
+  \ket{\psi} = \left(\Pi_{(i,j)\in G} CZ_{i,j}\right) H^{\otimes n} \ket{0}
 \end{equation}
 Where $CZ_{ij}$ is a controlled-Z gate applied on qubits $i$ and $j$, and ($i$,$j$) are edges of a hidden graph $G$. Different graphs, $G$, create different graph states. Our goal is to determine generate the graph state, $\ket{\psi}$, without knowing the specific graph which was used.
 \paragraph{a) Look into the properties of graph states.
@@ -248,11 +552,11 @@ Graph states are stabilizer states with a specific structure. Describe the key p
 Graph states are a class of stabilizer states with a defined structure. Stabilizer states for $n$-qubit systems are uniquely characterized by $n$ stabilizers, each being an $N$-fold tensor product of Pauli operators (up to a factor of  $\{\pm 1, \pm i\}$).
 A stabilizer is an operator under which the state remains invariant, making the state a simultaneous $+1$ eigenstate of all $N$ stabilizer:
 \begin{equation}
-	S_{i} \ket{\psi} = \ket{\psi}
+  S_{i} \ket{\psi} = \ket{\psi}
 \end{equation}
 For graph states, the stabilizer associated with each vertex $i$ has the form:
 \begin{equation}
-	S_{i} = X_{i} \Pi_{(i,j)\in G} Z_j
+  S_{i} = X_{i} \Pi_{(i,j)\in G} Z_j
 \end{equation}
 where each stabilizer $S_i$ corresponds to a specific qubit $i$ and its neighbors in Graph $G$.
 
@@ -267,8 +571,8 @@ By repeating this process for each qubit, we can reconstruct the graph of the $n
 
 \paragraph{b) You may use the following code snippet to generate a random graph state}
 \begin{minted}[bgcolor=bg,
-               frame=lines,
-               framesep=2mm]{python}
+              frame=lines,
+              framesep=2mm]{python}
 def generate_clifford_circ(num_qubits, depth):
     U_hidden = qiskit.QuantumCircuit(num_qubits)
     for i in range(num_qubits):
@@ -300,8 +604,8 @@ Checking all possible sets of $(i,j)$ is feasible since the total number of comb
 
 Here are the implemented code:
 \begin{minted}[bgcolor=bg,
-	frame=lines,
-	framesep=2mm]{python}
+  frame=lines,
+  framesep=2mm]{python}
 import itertools
 
 def GraphStateQST(U_hidden, num_qubits, num_shots=100):
@@ -318,7 +622,7 @@ def GraphStateQST(U_hidden, num_qubits, num_shots=100):
     # Phase 2
     # Extract bit string
     result = backend.run(circ, shots=num_shots)
-	          .result().data()["counts"]
+            .result().data()["counts"]
     result = [int(i,16) for i in result.keys()]
 
     # Phase 3
@@ -332,15 +636,15 @@ def GraphStateQST(U_hidden, num_qubits, num_shots=100):
         if isConnected:
           for edge in comb:
             graph.append({i, edge}) \\
-			  if {i, edge} not in graph else None
+        if {i, edge} not in graph else None
   
   return graph
 \end{minted}
 
 Here are the other functions, one to verify $b_{i} \bigoplus{j \in (i,j)} \oplus b_{j} = 0$ and the other for generating graph state from the given graph, represented by $U_\text{gen}$.
 \begin{minted}[bgcolor=bg,
-	frame=lines,
-	framesep=2mm]{python}
+  frame=lines,
+  framesep=2mm]{python}
 # Phase 3
 def xor_bits_at_positions(nums, positions, base_location):
   for num in nums:    
@@ -350,7 +654,7 @@ def xor_bits_at_positions(nums, positions, base_location):
     # XOR each specified bit position
     for pos in positions:
       # Extract the bit at the current position 
-	  # and XOR it with the result
+    # and XOR it with the result
       result ^= (num >> pos) & 1
     
     if result == 0:
