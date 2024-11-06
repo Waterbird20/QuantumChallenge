@@ -32,6 +32,8 @@
 \author{Donghun Jung}
 \maketitle
 
+\section{Convention}
+
 \section*{Problem 1: Quantum States with Few Qubits}
 
 The first class of states that we will consider are generic pure quantum states (i.e. there is no restriction on the quantum circuit which created the state), on a small number of qubits. In general, a generic quantum state will require an exponential number of measurements to reconstruct. However, when the number of qubits is small, we can simply pay this exponential cost.
@@ -537,6 +539,14 @@ And it is actually performing four singular value decomposition.
   U_{10} &= A_{1} (-S) B_{0}^{\dagger} \\
   U_{11} &= A_{1} C B_{1}^{\dagger} 
 \end{align}
+Then, 
+\begin{align}
+  U = \ketbra{0} \otimes A_0 + \ketbra{0} A_{1}
+  U = \ketbra{0} \otimes B_0 + \ketbra{0} B_{1}
+\end{align}
+$ I \otimes \ketbra{0}_i +  R_y  \otimes \ketbra{1}$
+
+
 
 \section*{Problem 2 : Graph States}
 
