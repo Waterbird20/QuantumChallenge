@@ -37,46 +37,51 @@ Quantum phase estimation (QPE) can be used to measure the Hamming weight of a qu
 
 \subsubsection*{a) Write down the Hamiltonian whose eigenvalues can distinguish the Hamming weight of an n qubit quantum state.}
 
-The Hamiltonian whose eigenvalues differs by Hamming weight in $n$-qubit system can be constructed by the projector onto the space of fixed Hamming weight $i$. That is,
-$$
-\mathcal{H} = \sum_{i=0}^{2^n -1} e_i P_{i}
-$$
-We can choose $e_i = i$ where the eigenvalue becomes the Hamming weight $i$.
-Note that the given hamiltonian can have ${}_{n}C_{i}$ for $e_i$.
+The Hamiltonian whose eigenvalues distinguish the Hamming weight in an $n$-qubit system can be constructed as a sum of projectors onto the subspaces of fixed Hamming weight $i$, $P_{i}$ introduced in \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}. That is,
+\begin{equation}
+	\mathcal{H} = \sum_{i=0}^{n} e_i P_{i}
+\end{equation}
+where we can set $e_i = i$, so that the eigenvalue corresponds to the Hamming weight $i$. 
+Note that the Hamiltonian can exhibit a degeneracy of ${}_{n}C_i$ for each eigenvalue $e_i$.
 
 \subsubsection*{b) For an $n$ qubit state, what is the minimum number of bits needed to measure the hamming weight of the state? Hint: The Hamming weight of the state is in the range $\{0,1,..,n\}$}
-Let $k$ denote the minimum number of bits required to measure hamming weight of the state. Then
-$$
-k = \left[\log_{2}(n+1)\right]
-$$
-where $\left[ a \right]$ denotes the smallest integer larger than $a$.
+Let $k$ represent the minimum number of bits required to measure the Hamming weight of an $n$-qubit state. Then,
+\begin{equation}
+	k = \lceil\log_{2}(n+1)\rceil
+\end{equation}
+where $\lceil a \rceil$ denotes the ceiling function, or the smallest integer greater than or equal to $a$.
 
 \section*{Exercise 2}
-Using qiskit, create a function that takes in a quantum state in vector format as input and returns a quantum circuit that measures the Hamming weight of the state. Hint: see ref \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}. You can use qiskit's initialize module to initialize the states.
+\subsection*{
+    Using qiskit, create a function that takes in a quantum state in vector format as input and returns a quantum circuit that measures the Hamming weight of the state. Hint: see ref \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}. You can use qiskit's initialize module to initialize the states.
+}
 
-From the given reference, in order to measure Hamming weight of $n$ qubit system, it requires $k$ qubits as a control register as discussed in the Exercise 1 b). 
-Let $\ket{\Psi}$ denote the wavefunction for whole system including control registers and prepared state.
-Given arbitrary state $\ket{\psi}$, the following algorithm starts with preparing $\ket{\psi} \otimes \ket{0}_{C}^{\otimes k}$.
-Then, act on the control register qubits with $k$ Hadamard gates, we have:
+As discussed in Exercise 1(b) and referenced in \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}, measuring the Hamming weight of an $n$-qubit system requires $k$ qubits as a control register. 
+Below, I provide the algorithm described in the reference. Please see the detailed calculation in the reference\cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}.
+% Todo Fix this
+\paragraph{Phase 1. }Let $\ket{\Psi}$ represent the total system, including both the control registers and the prepared state.
+Given an arbitrary state $\ket{\psi}$, the algorithm begins by preparing $\ket{\psi} \otimes \ket{0}_{C}^{\otimes k}$.
+Next, apply $k$ Hadamard gates to the control register qubits:
 \begin{align}
 	\ket{\Psi} &= \ket{\psi} \otimes H^{\otimes k} \ket{0}_{C}^{\otimes k} \\
 	&= \ket{\psi} \otimes \ket{+}_{C}^{\otimes k}
 \end{align} 
-Next, acting on $R_{z}(\gamma_{j})_{C_{j}}$ gate on $j$ qubit, labeled $C_{j}$ where $\gamma_{j} = \frac{n\pi}{N+1}2^{j-1}$.
+\paragraph{Phase 2. }Apply $R_{z}(\gamma_{j}){C{j}}$ gates on each qubit $C_{j}$, where $\gamma_{j} = \frac{n\pi}{N+1}2^{j-1}$:
 \begin{align}
 	\ket{\Psi} = \ket{\psi} \otimes \Pi_{j=1}^{k} R_{z}(\gamma_{j})_{C_{j}} \ket{+}_{C_{j}}
 	\label{eq:algorithm2}
 \end{align}
-Applying the following controlled-Z gate,
+\paragraph{Phase 3. }Apply the following controlled-Z gates:
 \begin{align}
 	U = \Pi_{j=1}^{k} \left[ \ketbra{0}_{C_j} \otimes I_S + \ketbra{1}_{C_j} \otimes R_z^{\otimes n} (\beta_j)_S\right]
 	\label{eq:algorithm3}
 \end{align}
 where $\beta_j = \frac{2\pi}{N+1} 2^{j-1}$.
-Finally, IQFT(inverse quantum Fourier Transform) on register qubits and measure register qubits in the computational basis $\left\{ \ketbra{0}, \ketbra{1}, \cdots, \ketbra{N} \right\}$.
+\paragraph{Phase 4. }Perform the inverse quantum Fourier transform (IQFT) on the control qubits and measure them in the computational basis $\left\{ \ketbra{0}, \ketbra{1}, \cdots, \ketbra{N} \right\}$.
 
+\paragraph{State Evolutions}
 Let me show a detailed process that how the state changes that enables measurement of Hamming weight.
-After the Eq. \ref{eq:algorithm2}, the state becomes:
+After the Eq. \ref{eq:algorithm2}, the state evolves as:
 \begin{align}
     \ket{y}_C &\rightarrow \bigotimes_{j=1}^k R_z(\gamma_j)_{C_j} \ket{y_k}_{C_k} \ldots \ket{y_1}_{C_1} \notag \\
     &= \exp{\!\left( \sum_{j=1}^k \frac{\mathrm{i} \gamma_j}{2}(2y_j - 1) \right)} \ket{y_k}_{C_k} \ldots \ket{y_1}_{C_1} \notag \\
@@ -84,11 +89,11 @@ After the Eq. \ref{eq:algorithm2}, the state becomes:
     &= \exp\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right) \ket{y}_C,
 \end{align}
 where $\Gamma = \sum_{j=1}^k \gamma_j$.
-Thus, 
+Thus, the state becomes:
 \begin{align}
 	\ket{\Psi} = \ket{\psi} \otimes \frac{1}{\sqrt{N+1}} \sum_{y=0}^N \exp{\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right)} \ket{y}_C
 \end{align} 
-Next, considering the action of controlled-Z gate in Eq. \ref{eq:algorithm3},
+Now, applying the controlled-Z gate in Eq.\ref{eq:algorithm3}, we get:
 \begin{align}
 	\ket{y}_C \ket{\psi}_S 
     &\rightarrow \ket{y}_C R_z^{\otimes n}(y_1 \beta_1) \cdots R_z^{\otimes n}(y_k \beta_k) \ket{\psi}_S \notag \\
@@ -96,7 +101,7 @@ Next, considering the action of controlled-Z gate in Eq. \ref{eq:algorithm3},
     &= \ket{y}_C R_z^{\otimes n} \!\left(\sum_{j=1}^k y_j\beta_j \right) \ket{\psi}_S \notag \\
     &= \ket{y}_C R_z^{\otimes n} \!\left(\vec{y}\cdot\vec{\beta} \right) \ket{\psi}_S,
 \end{align}
-thus, we have:
+resulting in:
 \begin{align}
 	\ket{\Psi} = R_z^{\otimes n} \left(\vec{y}\cdot \vec{\beta}\right) \ket{\psi}_S \otimes \frac{1}{\sqrt{N+1}} \sum_{y=0}^N \exp{\!\left( \mathrm{i} \vec{\gamma}\cdot\vec{y}  - \frac{\mathrm{i}}{2} \Gamma \right)} \ket{y}_C
 \end{align}
@@ -105,101 +110,232 @@ Here,
     \vec{\gamma}\cdot\vec{y} &= \sum_{j=1}^k \gamma_j y_j =\frac{n \pi}{N+1} \sum_{j=1}^k y_j 2^{j-1} = \frac{n \pi y}{N+1}, \\
     \vec{\beta}\cdot\vec{y} &= \sum_{j=1}^k \beta_j y_j =\frac{2 \pi}{N+1} \sum_{j=1}^k y_j 2^{j-1} = \frac{2 \pi y}{N+1}.
 \end{align}
+we get,
 \begin{equation}
 	\ket{\Psi} = \ket{y}_C \\ \otimes R_z^{\otimes n} \!\left( \frac{2 \pi y}{N+1}\right) \ket{\psi}_S \otimes \frac{1}{\sqrt{N+1}} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{y=0}^N \exp{\!\left( \frac{\mathrm{i}n\pi y}{N+1} \right)} .
 \end{equation}
-Noting that,
+Note that:
 \begin{equation}
     R_z^{\otimes n}\!\left(\frac{2 \pi y}{N+1}\right) = \exp\! \left(\frac{-\mathrm{i}n \pi y}{N+1} \right) \sum_{x=0}^n \exp\! \left( \frac{2\pi \mathrm{i} xy}{N+1} \right) P_x.
 \end{equation}
-after the controlled-Z operation, we see the $\ket{\Psi}$ can be expressed as:
+After the controlled-Z gate, the state becomes:
 \begin{equation}
 	\ket{\Psi} = \frac{1}{\sqrt{N+1}} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{y=0}^N \sum_{x=0}^n \exp\! \left( \frac{2\pi \mathrm{i} xy}{N+1} \right) P_x\ket{\psi}_S\ket{y}_C .
 \end{equation} 
-After applying IQFT on control register qubits, we have
+Upon applying IQFT to the control register, we obtain:
 \begin{equation}
 	\frac{1}{N+1} \exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{z,y,x=0}^N  \exp\! \left( \frac{2\pi \mathrm{i} (x-z) y}{N+1} \right) \\ \ket{z}_C P_x \ket{\psi}_S.
 \end{equation}
-Here the summation, 
+Using the summation identity:
 \begin{align}
 	S = \sum_{y=0}^N  \exp\! \left( \frac{2\pi \mathrm{i} (x-z) y}{N+1} \right) = (N+1)\delta_{xz}
 \end{align}
-The state finally becomes:
+the state becomes:
 \begin{equation}
 	\exp{\!\left(  - \frac{\mathrm{i}}{2} \Gamma \right)} \sum_{x=0}^N \ket{x}_C \otimes P_x\ket{\psi}_S
 \end{equation}
-Therefore, probability that we measure Hamming weight $a$ is:
+Therefore, the probability of measuring Hamming weight $a$ is:
 \begin{equation}
 	p_{a} = \left| P_{a} \ket{\psi} \right|^{2}
 	\label{eq:hamming_weight_probability}
 \end{equation}
-and the post-measurement state $\ket{\bar{\psi}}$ is:
+and the post-measurement state is:
 \begin{equation}
 	\ket{\bar{\psi}}  = \frac{P_{a} \ket{\psi}}{\sqrt{p_{a}}}.
 	\label{eq:post_measurement_state}
 \end{equation}
+
+Here is the code I implemented:
+\begin{minted}[bgcolor=bg,
+    frame=lines,
+    framesep=2mm]{python}
+def HammingWeight(vector, num_shot=100):
+  # num of physical qubits
+  n = np.log2(vector.shape[0]).astype(np.int64) 
+  # num of register qubits
+  k = np.ceil(np.log2(n+1)).astype(np.int64)
+  N = 2**k - 1
+
+  qc = qiskit.QuantumCircuit(n + k, k) 
+  # Phase 1
+  # Register Qubits
+  state_computation = qiskit.QuantumCircuit(k)
+  for i in range(k):
+    state_computation.h(i)
+  # State Preparation
+  state_preparation = qiskit.QuantumCircuit(n)
+  state_preparation.initialize(vector, 
+                      state_preparation.qubits)
+
+  qc = qc.compose(state_computation, 
+                   qubits=[i for i in range(0,k,1)])
+  qc = qc.compose(state_preparation, 
+                   qubits=[i for i in range(k,k+n,1)])
+
+  # Phase 2
+  for i in range(0,k):
+    theta = n*np.pi/(N+1)*2**i
+    qc.rz(theta, i)
+
+  # Phase 3
+  for i in range(k-1,-1,-1):
+    theta = 2*np.pi/(N+1) * 2**i
+    for j in range(k+n-1,k-1,-1):
+      qc.crz(theta, i, j)
+   
+  # Phase 4
+  # IQFT
+  for i in range(k-1,-1,-1): # 0 -> k-1
+    for j in range(k-1, i, -1):
+      theta = -2*np.pi / 2**(j-i+1)
+      qc.crz(theta, j, i)
+    qc.h(i)      
+
+  for i in range(k):
+    qc.measure(i,k-i-1)
+  
+  result = MeasurementResultHandler(
+    backend.run(qc, shots=num_shot)
+    .result().data()["counts"], k)
+  
+  return qc, result
+\end{minted}
 
 
 \section*{Exercise 3}
 Use the function created in part 2 above to measure the Hamming weight of the following states:
 
 \subsubsection*{a) $\ket{\psi} = \ket{11}$}
-The given Hamming weight is 2 the circuit execution results also shows the hamming weight is 2. 
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[t]{0.65\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_a_circuit.pdf}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_a_hist.pdf}
+        %\caption{}
+    \end{subfigure}
+    \caption{$\ket{\psi} = \ket{11}$ (a) Hamming Weight Measurement Circuit. (b)Histogram of Hamming Weight Measurement Results.}
+\end{figure*}
+
+
+The Hamming weight of the given state is 2. The circuit execution confirms that the Hamming weight is also 2.
 
 \subsubsection*{b) $\ket{\psi} = \ket{01}$}
-The given Hamming weight is 1 the circuit execution results also shows the hamming weight is 1. 
+
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[t]{0.65\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_b_circuit.pdf}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_b_hist.pdf}
+        %\caption{}
+    \end{subfigure}
+    \caption{$\ket{\psi} = \ket{01}$ (a) Hamming Weight Measurement Circuit. (b)Histogram of Hamming Weight Measurement Results.}
+\end{figure*}
+
+The Hamming weight of the given state is 1. The circuit execution confirms that the Hamming weight is also 1.
+
 \subsubsection*{c) $\ket{\psi} = \frac{1}{\sqrt{2}} \left(\ket{00} + \ket{11} \right)$}
 
-The given state has a probability of $\frac{1}{2}$ to be observed Hamming weight 0, and $\frac{1}{2}$ to be observed Hamming weight 2. 
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[t]{0.65\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_c_circuit.pdf}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_c_hist.pdf}
+        %\caption{}
+    \end{subfigure}
+    \caption{$\ket{\psi} = \frac{1}{\sqrt{2}} \left(\ket{00} + \ket{11} \right)$ (a) Hamming Weight Measurement Circuit. (b)Histogram of Hamming Weight Measurement Results.}
+\end{figure*}
+
+The given state has a 50\% probability of being observed with a Hamming weight of 0, and a 50\% probability of having a Hamming weight of 2.
 
 \subsubsection*{d) $\ket{\psi} = \frac{1}{\sqrt{3}} \left( \ket{011} + \ket{101} + \ket{110} \right)$}
-The given Hamming weight is 2 the circuit execution results also shows the hamming weight is 2.
+
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[t]{0.65\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_d_circuit.pdf}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figure/exercise_3_d_hist.pdf}
+        %\caption{}
+    \end{subfigure}
+    \caption{$\ket{\psi} = \frac{1}{\sqrt{3}} \left( \ket{011} + \ket{101} + \ket{110} \right)$ (a) Hamming Weight Measurement Circuit. (b)Histogram of Hamming Weight Measurement Results.}
+\end{figure*}
+
+The Hamming weight of the given state is 2. The circuit execution confirms that the Hamming weight is also 2.
 
 \subsubsection*{e) Explain the result in part c) above.}
 
-The given state has a probability of $\frac{1}{2}$ to be observed Hamming weight 0, and $\frac{1}{2}$ to be observed Hamming weight 2. 
+The given state has a 50\% probability of being observed with a Hamming weight of 0, and a 50\% probability of having a Hamming weight of 2.
+
 
 \section*{Exercise 4}
 \subsubsection*{Explain how the function in part 2 above can be used to prepare a Dicke state.}
 
-The post-measurement state can be used to prepare Dicke state. From the Eq. \ref{eq:post_measurement_state}, 
-we see that the initially given state projected on to the space of fixed Hamming weight $x$, therefore, becomes a linear combination computational bases of Hamming weight $x$.
-For example of three-qubit system, and $x=2$, the basis is $\{\ket{011}, \ket{101}, \ket{110}\}$. 
-Here Dicke state in $n$-qubit system and Hamming weight $k$ has form:
+The function from part 2 can be used to prepare a Dicke state through post-measurement. From the Eq. \ref{eq:post_measurement_state}, 
+we see that projecting the initial state onto the space of fixed Hamming weight $x$, results in a linear combination of computational basis states with Hamming weight $x$.
+For example, in a three-qubit system with $x=2$, the basis is $\{\ket{011}, \ket{101}, \ket{110}\}$. 
+A Dicke state for an $n$-qubit system and Hamming weight $k$ is given by:
 \begin{equation}
-	\ket{D_{n,k}} = \frac{1}{\sqrt{{}_n C_{k}}} \sum_{i=1}^{{}_n C_{k}} \ket{e_{i}}
+  \ket{D_{n,k}} = \frac{1}{\sqrt{{}_n C_{k}}} \sum_{i=1}^{{}_n C_{k}} \ket{e_{i}}
 \end{equation}
-where $\ket{e_i}$ is an element of basis of Hamming weight $k$ whose the number of basis is ${}_n C_{k}$.
-Considering the whole coefficients are equal, the initial state before the measuring Hamming weight also has the same coefficients in the basis of computational basis.
-Such state is just $+$ state:
+where $\ket{e_i}$ are the basis elements with Hamming weight $k$ and there are ${}_n C_{k}$ such basis states. 
+Since the coefficients of the Dicke state are equal, the initial state before measuring the Hamming weight has the same coefficients in the computational basis.
+
+This initial state is simply the $+$ state:
 \begin{equation}
 	\ket{\psi} = \ket{++ \cdots +} = \frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n -1} \ket{i}
 \end{equation}
-where $i$ denotes the bit string. After measuring Hamming weight $k$, the post-measurement state $\ket{\bar{\psi}}$ becomes Dicke state $\ket{D_{n,k}}$.
+where $i$ represents the bit string. After measuring the Hamming weight $k$, the post-measurement state $\ket{\bar{\psi}}$ becomes Dicke state $\ket{D_{n,k}}$.
 
 \section*{Exercise 5}
 Suppose we want to prepare the Dicke state with $n = 100$ and $k = 50$.
 
-\subsubsection*{What is the probability that the state will be measured?}
+\subsubsection*{a) What is the probability that the state will be measured?}
 Preparing + state, $\ket{\psi} = \ket{+}^{\otimes n}$, the probability that we measure Hamming weight $k$ is given in the Eq. \ref{eq:hamming_weight_probability}.
-Among the computational basis, $\{\ket{0}, \ket{1}, \cdots, \ket{2^n}-1\}$, the number of basis whose Hamming weight is ${}_n C_{k}$. Then,
+Among the computational basis, $\{\ket{0}, \ket{1}, \cdots, \ket{2^n -1}\}$, the number of basis whose Hamming weight is ${}_n C_{k}$. Then,
 \begin{equation}
-	p_{k} = \left| P_{k} \ket{\psi} \right|^{2} = \left| \frac{{}_n C_{k}}{\sqrt{2^n}} \right|^{2} = \frac{({}_n C_k)^{2}}{2^n}.
+	p_{n,k} = \left| P_{k} \ket{\psi} \right|^{2} = \left| \frac{{}_n C_{k}}{\sqrt{2^n}} \right|^{2} = \frac{({}_n C_k)^{2}}{2^n}.
 \end{equation}
 
+Therefore, in $n=100, k=50$, we have $p_{n,k} \simeq 0.07959$. 
+
+\subsubsection*{b) What is the minimum number of measurements required?}
+
+At least 13 shots are required for the expectation value of the number of measurements in the Dicke state $ket{D_{n=100,k=50}}$ to exceed 1. 
+With this, the probability of measuring the Dicke state $\ket{D_{n=100,k=50}}$ is approximately 66\%.
 
 
-\subsubsection*{What is the minimum number of measurements required?}
+\subsubsection*{c) How many gates are required?}
 
-\subsubsection*{How many gates are required?}
+In Phase 1, we prepare the control register $C$, consisting of 7 qubits in initial state $\ket{0}_C$.
+We also prepare $\ket{\psi}$  the system qubits. As discussed in Exercise 4, we initialize the system qubits in the $\ket{+}$ state, requiring 100 Hadamard gate in this phase. 
+In Phase 2, we apply 7 Hadamard gates to the control register.
+In Phase 3, we apply 7 Rz gates to the control register qubits.
+In Phase 4, we perform the controlled unitary gate from Eq. \ref{eq:algorithm3}. This requires 100 Controlled RZ gate per register qubit, therefore, we need 700 controlled Rz gates.
+In Phase 5, we perform  IQFT on controlled register qubits. 
+This phase involves 7 hadamard gate and it applies controlled Rz gate that act on qubit in $j$ as control and qubit $i$ as target, 
+where $i<j \leq k$ and $i$ runs from 0 to 7. Thus, we need 7 hadamard gate and 21 controlled Rz gate. 
+Therefore, we need 114 Hadamard gates, 721 controlled Z gate, and 7 Rz gates.  
 
-In phase 1, preparing control register C, consiting of $k$ qubits in initial state $\ket{0}_C$. Here we also should prepare $\ket{\psi}$ in system qubits. 
-As discussed in Exercise 4, we prepare $\ket{+}$ state in system qubits, then we need $n$ Hadamard gate in this phase. 
-In phase 2, acting on $k$ hadamard gates on control registers, we need $k$ Hadamard gate in this phase.
-In phase 3, Acting on Rz gate on control register qubits, requires $k$ Rz gate. 
-In phase 4, We perform controlled unitary gate in Eq. \ref{eq:algorithm3}, requires $n$ Controlled RZ gate per register qubit, therefore, we need $kn$ controlled Rz gates.
-In phase 5, performing IQFT on controlled register qubits. It requires $k$ hadamard gate and it applies controlled Rz gate, control qubit in $j$ to target qubit $i$, where $i<j \leq k$ and $i$ runs from 0 to $k$. Therefore,  $k$ hadamard gate and $\frac{k(k-1)}{2}$ controlled Rz gate. 
-Therefore, we need $2k + N$ Hadamard gates, $\frac{k(k-1)}{2} + nk$ controlled Z gate, and $k$ Rz gates.  
+% Todo Draw Table?
 
 %\printbibliography
 
