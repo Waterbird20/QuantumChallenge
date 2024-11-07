@@ -1,13 +1,10 @@
 \documentclass[a4paper, 11pt]{article}
 
-%\usepackage[
-%backend=biber,
-%style=numeric,
-%]{biblatex}
 \usepackage{physics}
+\usepackage{xcolor}
+\usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{multirow}
-\usepackage{physics}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{ragged2e}
@@ -195,6 +192,14 @@ Among the computational basis, $\{\ket{0}, \ket{1}, \cdots, \ket{2^n}-1\}$, the 
 \subsubsection*{What is the minimum number of measurements required?}
 
 \subsubsection*{How many gates are required?}
+
+In phase 1, preparing control register C, consiting of $k$ qubits in initial state $\ket{0}_C$. Here we also should prepare $\ket{\psi}$ in system qubits. 
+As discussed in Exercise 4, we prepare $\ket{+}$ state in system qubits, then we need $n$ Hadamard gate in this phase. 
+In phase 2, acting on $k$ hadamard gates on control registers, we need $k$ Hadamard gate in this phase.
+In phase 3, Acting on Rz gate on control register qubits, requires $k$ Rz gate. 
+In phase 4, We perform controlled unitary gate in Eq. \ref{eq:algorithm3}, requires $n$ Controlled RZ gate per register qubit, therefore, we need $kn$ controlled Rz gates.
+In phase 5, performing IQFT on controlled register qubits. It requires $k$ hadamard gate and it applies controlled Rz gate, control qubit in $j$ to target qubit $i$, where $i<j \leq k$ and $i$ runs from 0 to $k$. Therefore,  $k$ hadamard gate and $\frac{k(k-1)}{2}$ controlled Rz gate. 
+Therefore, we need $2k + N$ Hadamard gates, $\frac{k(k-1)}{2} + nk$ controlled Z gate, and $k$ Rz gates.  
 
 %\printbibliography
 
