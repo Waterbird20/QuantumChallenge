@@ -79,6 +79,12 @@ Next, apply $k$ Hadamard gates to the control register qubits:
 where $\beta_j = \frac{2\pi}{N+1} 2^{j-1}$.
 \paragraph{Phase 4. }Perform the inverse quantum Fourier transform (IQFT) on the control qubits and measure them in the computational basis $\left\{ \ketbra{0}, \ketbra{1}, \cdots, \ketbra{N} \right\}$.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figure/HammEstimationEff.pdf}
+    \caption{The quantum circuit implementing the Hamming weight measurement algorithm is shown. The figure is adapted from reference \cite{rethinasamy2024logarithmicdepthquantumcircuitshamming}.}
+\end{figure}
+
 \paragraph{State Evolutions}
 Let me show a detailed process that how the state changes that enables measurement of Hamming weight.
 After the Eq. \ref{eq:algorithm2}, the state evolves as:
