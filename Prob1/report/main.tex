@@ -219,7 +219,8 @@ def SingleQubitCircuit(statevector):
   sin = np.linalg.norm(statevector[1])
   phi = np.arctan2(sin,cos)
   theta = (np.log(statevector[1]/ 
-          np.linalg.norm(statevector[1]))*-1j).real if statevector[1] != 0 else 0
+          np.linalg.norm(statevector[1]))*-1j).real 
+            if statevector[1] != 0 else 0
 
   U_gen = qiskit.QuantumCircuit(1)
   U_gen.ry(2*phi,0)
@@ -416,6 +417,228 @@ As described in part (b), we can reconstruct the state vector with five measurem
   framesep=2mm]{python}
 def TwoQubitQST(U_hidden, num_shots:int=100):
   hidden_circuit = U_hidden.copy()
+  
+  qc1 = qiskit.QuantumCircuit(2)
+  circ1 = hidden_circuit.compose(qc1)
+  circ1.measure_all()
+  #print(circ1.draw())
+  result1 = MeasurementResultHandler(backend
+              .run(circ1, shots=num_shots)
+              .result().data()["counts"], 2, num_shots)
+  m_00 = result1.get("0x0"); m_01 = result1.get("0x1"); 
+    m_10 = result1.get("0x2"); m_11 = result1.get("0x3") 
+  if m_00 == 1:
+    return np.array([1,0,0,0], dtype=np.complex64)
+  if m_01 == 1:
+    return np.array([0,1,0,0], dtype=np.complex64)
+  if m_10 == 1:
+    return np.array([0,0,1,0], dtype=np.complex64)
+  if m_11 == 1:
+    return np.array([0,0,0,1], dtype=np.complex64)
+  
+  qc2 = qiskit.QuantumCircuit(2)
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    qc2.cx(0,1) # swap b, d
+
+  qc2.h(0)
+  circ2 = hidden_circuit.compose(qc2)
+  circ2.measure_all()
+  #print(circ2.draw())
+  
+  qc3 = qiskit.QuantumCircuit(2)
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    qc3.cx(0,1) # swap b, d
+  qc3.s(0)
+  qc3.h(0)
+  circ3 = hidden_circuit.compose(qc3)
+  circ3.measure_all()
+  #print(circ3.draw())
+
+  qc4 = qiskit.QuantumCircuit(2)
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    qc4.cx(0,1) # swap b, d
+  qc4.h(1)
+  circ4 = hidden_circuit.compose(qc4)
+  circ4.measure_all()
+  #print(circ4.draw())
+  
+  qc5 = qiskit.QuantumCircuit(2)
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    qc5.cx(0,1) # swap b, d
+  qc5.s(1)
+  qc5.h(1)
+  circ5 = hidden_circuit.compose(qc5)
+  circ5.measure_all()
+  #print(circ5.draw())
+  
+  result2 = MeasurementResultHandler(backend
+              .run(circ2, shots=num_shots).result()
+              .data()["counts"], 2, num_shots)
+  result3 = MeasurementResultHandler(backend
+              .run(circ3, shots=num_shots).result()
+              .data()["counts"], 2, num_shots)
+  result4 = MeasurementResultHandler(backend
+              .run(circ4, shots=num_shots).result()
+              .data()["counts"], 2, num_shots)
+  result5 = MeasurementResultHandler(backend
+              .run(circ5, shots=num_shots).result()
+              .data()["counts"], 2, num_shots)
+
+  a = np.sqrt(m_00); b = np.sqrt(m_01); 
+  c = np.sqrt(m_10); d = np.sqrt(m_11)
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    d = np.sqrt(m_01); b = np.sqrt(m_11)
+    
+
+  statevector = np.array([a,b,c,d], dtype=np.complex64)
+  theta_01 = 0; theta_10 = 0; theta_11 = 0
+
+  executing_Eq = {i for i in range(1,9)}
+  related_Eq = {
+    "a" : {1,3,5,7},
+    "b" : {1,3,6,8},
+    "c" : {2,4,5,7},
+    "d" : {2,4,6,8}
+  }
+  if a == 0:
+    executing_Eq-= related_Eq["a"]
+  if b == 0:
+    executing_Eq-= related_Eq["b"]
+  if c == 0:
+    executing_Eq-= related_Eq["c"]
+  if d == 0:
+    executing_Eq-= related_Eq["d"]
+
+  m_0p = result2.get("0x0"); m_0m = result2.get("0x1"); 
+    m_1p = result2.get("0x2"); m_1m = result2.get("0x3") 
+  m_0P = result3.get("0x0"); m_0M = result3.get("0x1"); 
+    m_1P = result3.get("0x2"); m_1M = result3.get("0x3") 
+  m_p0 = result4.get("0x0"); m_p1 = result4.get("0x1"); 
+    m_m0 = result4.get("0x2"); m_m1 = result4.get("0x3") 
+  m_P0 = result5.get("0x0"); m_P1 = result5.get("0x1"); 
+    m_M0 = result5.get("0x2"); m_M1 = result5.get("0x3") 
+
+  if 1 in executing_Eq:
+    # eq 1.
+    cos_00_01 = (m_0p - m_0m) / (2*a*b)
+  if 2 in executing_Eq:
+    # eq 2.
+    cos_10_11 = (m_1p - m_1m) / (2*c*d)
+
+  if 3 in executing_Eq:
+    # eq 3.
+    sin_00_01 = (-m_0P + m_0M) / (2*a*b)
+  if 4 in executing_Eq:
+    # eq 4.
+    sin_10_11 = (m_1P - m_1M) / (2*c*d)
+
+  if 5 in executing_Eq:
+    # eq 5.
+    cos_00_10 = (m_p0 - m_m0) / (2*a*c)
+  if 6 in executing_Eq:
+    # eq 6.
+    cos_01_11 = (m_p1 - m_m1) / (2*b*d)
+
+  if 7 in executing_Eq:
+    # eq 7.
+    sin_00_10 = (-m_P0 + m_M0) / (2*a*c)
+  if 8 in executing_Eq:
+    # eq 8.
+    sin_01_11 = (m_P1 - m_M1) / (2*b*d)
+
+
+  if a != 0:
+    if b != 0:
+      theta_01 = np.arctan2(sin_00_01, cos_00_01)
+      theta_01 = theta_01 if theta_01 >= 0 
+                   else theta_01 + 2*np.pi
+      if c != 0:
+        theta_10 = np.arctan2(sin_00_10, cos_00_10)
+        theta_10 = theta_10 if theta_10 >= 0 
+                     else theta_10 + 2*np.pi
+        if d != 0:
+          if b < c:
+        
+            theta_10_11= np.arctan2(sin_10_11, cos_10_11)
+            theta_10_11 = theta_10_11 if theta_10_11 >= 0 
+                            else theta_10_11 + 2*np.pi
+            
+            theta_11 = theta_10 - theta_10_11
+            theta_11 = theta_11 if theta_11 >= 0 
+                         else theta_11 + 2*np.pi
+          else:
+            theta_01_11= np.arctan2(sin_01_11, cos_01_11)
+            theta_01_11 = theta_01_11 if theta_01_11 >= 0 
+                            else theta_01_11 + 2*np.pi
+            
+            theta_11 = theta_01 - theta_01_11
+            theta_11 = theta_11 if theta_11 >= 0 
+                         else theta_11 + 2*np.pi
+    
+        #else:
+      else:
+        if d!=0:
+          theta_01_11= np.arctan2(sin_01_11, cos_01_11)
+          theta_01_11 = theta_01_11 if theta_01_11 >= 0 
+                          else theta_01_11 + 2*np.pi
+          
+          theta_11 = theta_01 - theta_01_11
+          theta_11 = theta_11 if theta_11 >= 0 
+                       else theta_11 + 2*np.pi
+        #else:
+    else:
+      if c != 0:
+        theta_10 = np.arctan2(sin_00_10, cos_00_10)
+        theta_10 = theta_10 if theta_10 >= 0 
+                     else theta_10 + 2*np.pi
+    
+        if d != 0:
+          theta_10_11= np.arctan2(sin_10_11, cos_10_11)
+          theta_10_11 = theta_10_11 if theta_10_11 >= 0 
+                          else theta_10_11 + 2*np.pi
+          
+          theta_11 = theta_10 - theta_10_11
+          theta_11 = theta_11 if theta_11 >= 0 
+                       else theta_11 + 2*np.pi
+      #else:
+          
+  else:
+    if b != 0:
+      if c != 0 and d != 0:
+        theta_01_11= np.arctan2(sin_01_11, cos_01_11)
+        theta_01_11 = theta_01_11 if theta_01_11 >= 0 
+                        else theta_01_11 + 2*np.pi
+        
+        theta_11 = - theta_01_11
+        theta_11 = theta_11 if theta_11 >= 0 
+                     else theta_11 + 2*np.pi
+    
+        theta_10_11= np.arctan2(sin_10_11, cos_10_11)
+        theta_10_11 = theta_10_11 if theta_10_11 >= 0 
+                        else theta_10_11 + 2*np.pi
+        
+        theta_10 = theta_11 + theta_10_11
+        theta_10 = theta_10 if theta_10 >= 0 
+                     else theta_10 + 2*np.pi
+    
+    else:
+      theta_10_11= np.arctan2(sin_10_11, cos_10_11)
+      theta_10_11 = theta_10_11 if theta_10_11 >= 0 
+                      else theta_10_11 + 2*np.pi
+      
+      theta_11 = - theta_10_11
+      theta_11 = theta_11 if theta_11 >= 0 
+                   else theta_11 + 2*np.pi
+    
+  statevector[1] *= np.exp(1j*theta_01)
+  statevector[2] *= np.exp(1j*theta_10)
+  statevector[3] *= np.exp(1j*theta_11)
+    
+  if (m_00 == 0 and m_11 == 0) or (m_01 == 0 and m_10 == 0):
+    statevector[1], statevector[3] = \
+        statevector[3], statevector[1]
+
+  return statevector    
 \end{minted}
 
 Next, we need to determine the circuit parameters and ansatz. 
@@ -447,9 +670,10 @@ Then, apply a CNOT gate:
 \end{equation}
 Applying local unitary operations $U_0$ and $U_1$ on each qubit results in:
 \begin{align}
-  U_0 \ket{0} \rightarrow \ket{0} && U_0 \ket{1} \rightarrow \ket{0} \label{eq:local_unitary_schmidt1} \\
-  U_1 \ket{0} \rightarrow \ket{0} && U_1 \ket{1} \rightarrow \ket{0} \label{eq:local_unitary_schmidt2}
+  U_1 \ket{0}_{1} \rightarrow \ket{i^{0}}_{1} && U_1 \ket{1}_{1} \rightarrow \ket{i^{1}}_{1} \label{eq:local_unitary_schmidt1} \\
+  U_2 \ket{0}_{2} \rightarrow \ket{j^{0}}_{2} && U_2 \ket{1}_{2} \rightarrow \ket{j^{1}}_{2} \label{eq:local_unitary_schmidt2}
 \end{align}
+where upper index is inserted to distinguish the basis.
 The state then takes the form of the Schmidt decomposition in Eq. \ref{eq:schmidt_decomposition}.
 
 Next, we address the required local unitaries. To achieve a unitary transformation $\ket{0_{1}} \rightarrow \lambda^{\prime}_0 \ket{0} + \lambda^{\prime}_{1} \ket{1}$.
@@ -494,6 +718,77 @@ Once the parameters are calculated, we construct the circuit to prepare the targ
 In cases where there are not exactly two non-zero Schmidt coefficients, the state is separable and does not require a two-qubit gate. 
 When the Schmidt coefficient is $1$, only local unitary operations on each qubit are needed, as outlined in in Eq. \ref{eq:local_unitary_schmidt1} and Eq. \ref{eq:local_unitary_schmidt2}.
 Parameter extraction follows the same steps as in Eq. \ref{eq:local_unitary_schmidt3} to Eq. \ref{eq:local_unitary_schmidt6}.
+
+Here, I implemented the following code to construct a quantum circuit from the given state vector.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def TwoQubitCircuit(statevector, eps=1e-4):
+
+  # Schmidt decomposition
+  a_jk = statevector.reshape(2,2)
+  u, d, vh = np.linalg.svd(a_jk)
+  d = d.astype(np.complex64)
+
+
+  if d[0] == 0 or d[1] == 0:
+    idx = 0 if d[1] == 0 else 1
+
+    e2_1 = u[:,idx]
+    e1_1 = vh[idx,:]
+
+    # Ensure e2_1[0], ... be real, positive number
+    phase1 = e2_1[0] / np.linalg.norm(e2_1[0]) if np.linalg.norm(e2_1[0]) != 0 else 1; phase2 = e1_1[0] / np.linalg.norm(e1_1[0]) if np.linalg.norm(e1_1[0]) != 0 else 1
+
+    theta_1 = 2*np.arccos(e1_1[0].real)
+    phi_1 = (-1j * np.log(e1_1[1]/np.sin(theta_1/2))).real if np.abs(np.sin(theta_1/2)) > eps and np.linalg.norm(e1_1[1]) > eps else 0
+
+    theta_2 = 2*np.arccos(e2_1[0].real)
+    phi_2 = (-1j * np.log(e2_1[1]/np.sin(theta_2/2))).real if np.abs(np.sin(theta_2/2)) > eps and np.linalg.norm(e2_1[1]) > eps else 0
+    
+    
+    U_gen = qiskit.QuantumCircuit(2)
+    U_gen.ry(theta_1,0)
+    U_gen.rz(phi_1,0)
+    U_gen.ry(theta_2,1)
+    U_gen.rz(phi_2,1)
+
+    return U_gen
+
+  else:
+    e2_1 = u[:,0]; e2_2 = u[:,1]
+    e1_1 = vh[0,:]; e1_2 = vh[1,:]
+    # Ensure e2_1[0], ... be real, positive number
+    phase1 = e2_1[0] / np.linalg.norm(e2_1[0]) if np.linalg.norm(e2_1[0]) != 0 else 1; phase2 = e1_1[0] / np.linalg.norm(e1_1[0]) if np.linalg.norm(e1_1[0]) != 0 else 1
+    d[0] *= phase1 * phase2
+    e2_1 /= phase1; e1_1 /= phase2
+    phase1 = e2_2[0] / np.linalg.norm(e2_2[0]) if np.linalg.norm(e2_2[0]) != 0 else 1; phase2 = e1_2[0] / np.linalg.norm(e1_2[0]) if np.linalg.norm(e1_2[0]) != 0 else 1
+    d[1] *= phase1 * phase2
+    e2_2 /= phase1; e1_2 /= phase2
+
+    phase_d = d[0] / np.linalg.norm(d[0])
+    d /= phase_d
+
+    theta = 2 * np.arctan2(d[0].imag, d[0].real)
+    phi = (-1j*np.log(d[1]/np.sin(theta/2))).real if np.abs(np.sin(theta/2)) != 0 else 0
+
+    theta_1 = 2*np.arccos(e1_1[0].real)
+    phi_1 = (-1j * np.log(e1_1[1]/np.sin(theta_1/2))).real if np.abs(np.sin(theta_1/2)) != 0 else 0
+
+    theta_2 = 2*np.arccos(e2_1[0].real)
+    phi_2 = (-1j * np.log(e2_1[1]/np.sin(theta_2/2))).real if np.abs(np.sin(theta_2/2)) != 0 else 0
+    
+    U_gen = qiskit.QuantumCircuit(2)
+    U_gen.ry(theta,0)
+    U_gen.rz(phi,0)
+    U_gen.cx(0,1)
+    U_gen.ry(theta_1,0)
+    U_gen.rz(phi_1,0)
+    U_gen.ry(theta_2,1)
+    U_gen.rz(phi_2,1)
+
+    return U_gen
+\end{minted}
 
 \subsection*{Part III}
 \subsubsection*{Describe how you could extend the protocol developed in part's I) and II) to a general n qubit quantum state. How many different measurements would you need to apply?}
@@ -666,6 +961,7 @@ Thus, the controlled unitary can be written as:
 The unitary operations $V$ and $W$ are in $\mathbb{C}^{2^{k-2} \times 2^{k-2}}$, indicating that they can be iteratively decomposed using CSD. 
 Meanwhile, $(\ketbra{0} \otimes D + \ketbra{1} \otimes D^\dagger)$ represents a controlled-$Z$ gate.
 
+% TODO add circuit figure
 
 \section*{Problem 2 : Graph States}
 
@@ -816,7 +1112,7 @@ For $N > 10$, it is generally impossible to perform exact quantum state tomograp
 
 However, in some cases, if we have prior information about the state, we can perform a reasonably accurate QST with good approximations. 
 Specifically, we know the circuit ansatz, which describes how the state is generated. 
-The given `one brickwork layer' circuit has low circuit depth\footnote{the longest path in the circuit}(the longest path in the circuit is 2, with each brick contributing 1). 
+The given `one brickwork layer' circuit has low circuit depth(the longest path in the circuit is 2, with each brick contributing 1). 
 This suggests that the generated state has low entanglement.
 In particular, the farther apart qubits $q_i$ and $q_j$ are, the less entanglement is expected between them.
 
@@ -862,15 +1158,145 @@ In Eq. \ref{eq:approximation}, we can perform one more Schmidt decomposition on 
 We can assume $\beta_0 = 1$. This approximation holds when the distance $|i - j| \geq 4$, since the circuit depth is 2. 
 From Idea 2, we can now perform two-qubit QST on qubit pairs $(q_i, q_{i+1})$, $(q_j, q_{j+1})$, and more, simultaneously.
 
-For this, we need four detectors on qubits $q_i$, $q_{i+1}$, $q_j$, and $q_{j+1}$, resulting in $2^4 = 16$ possible measurement outcomes. 
+We can divide the 20 circuits into 4 phases, each consisting of 5 circuits. 
+We need to select pairs of target qubits such that the condition $4 \leq |i-j|$ holds, where $q_i$ and $q_j$ are element of target qubit pairs. 
+Below is the code I implemented to systematically choose the target qubit pairs for each phase.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def GenerateTargetQubitSet(num_qubits):
+    conditions = [
+        (0, 1),  # Phase 1: i % 4 == 0 or i % 4 == 1
+        (2, 3),  # Phase 2: i % 4 == 2 or i % 4 == 3
+        (1, 2),  # Phase 3: i % 4 == 1 or i % 4 == 2
+        (3, 0)   # Phase 4: i % 4 == 3 or i % 4 == 0
+    ]
+    isTrue = lambda i,idx_condition : 
+              i % 4 == conditions[idx_condition][0] 
+              and (i+1) % 4 == conditions[idx_condition][1]
+    target_qubit = [
+      [(i, i + 1) for i in range(num_qubits - 1) if isTrue(i, idx)]
+          for idx in range(4)
+      ]
+    return target_qubit
+\end{minted}
+
+After determining the target qubit pairs for each phase, the 5 circuits for measurement in each phase are generated using the following code.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def GenerateMeasurementCircuits(U_hidden, target_set):
+  hidden_circuit = U_hidden.copy()
+  num_qubits = len(hidden_circuit.qubits)
+  num_target = len(target_set)*2
+  
+  circuits = []
+  phase_operations = {
+    1: lambda qc, target: qc.h(target[0]),
+    2: lambda qc, target: (qc.s(target[0]), qc.h(target[0])),
+    3: lambda qc, target: qc.h(target[1]),
+    4: lambda qc, target: (qc.s(target[1]), qc.h(target[1])),
+  }
+  
+  for phase in range(5):
+    qc = qiskit.QuantumCircuit(num_qubits, num_target)
+      
+    if phase in phase_operations:
+      for target in target_set:
+        phase_operations[phase](qc, target)
+    
+    # Add measurement
+    for idx, target in enumerate(target_set):
+      qc.measure(target[0], 2 * idx)
+      qc.measure(target[1], 2 * idx + 1)
+      
+    result_circuit = hidden_circuit.compose(qc)
+    
+    circuits.append(result_circuit)
+      
+  return circuits
+
+\end{minted}
+
+To perform QST on multiple qubit pairs, we need four detectors on qubits $q_i$, $q_{i+1}$, $q_j$, and $q_{j+1}$, resulting in $2^4 = 16$ possible measurement outcomes. 
 Since we approximated the state as separable, we can combine measurement outcomes. For example, the measurement outcome $m_{0_i 0_{i+1}}$ can be calculated as:
 \begin{equation}
   m_{0_i 0_{i+1} } =  m_{0_i 0_{i+1} 0_{j} 0_{j+1} } +  m_{0_i 0_{i+1} 0_{j} 1_{j+1}} +  m_{0_i 0_{i+1} 1_{j} 0_{j+1}} +  m_{0_i 0_{i+1} 1_{j} 1_{j+1} }
 \end{equation}
 Thus, we can perform two-qubit QST on multiple qubit pairs simultaneously, using only five circuits. 
 By preparing four sets of qubit pairs, with each pair separated by at least 4 qubits, we can perform QST on all neighboring qubit pairs: ${(q_0, q_1), (q_1, q_2), \cdots, (q_{N-2}, q_{N-1})}$, by running 20 circuits.
-
+Below is the code that concatenates the measurement outcomes for a specific pair of qubits.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def SplitMeasurementResult(measurement_outcomes, target_set):
+    # {(0,1) : [{"0x0" : ~ ,... }, {"0x0" : ~ ,... }, ...], (4,5): ~ , ...}]
+    result = {} 
+    for idx, target in enumerate(target_set):
+        target_result = []
+        
+        for measurement_outcome in measurement_outcomes:
+            temp = {}
+            for i in range(4):
+                temp["0x" + format(i,"0x")] = 0
+            for key, item in measurement_outcome.items():
+                new_key_number = int(key,16) >> (2*idx) & 3
+                new_key = "0x" + format(new_key_number,"0x")
+                temp[new_key] += item
+            target_result.append(temp)
+        
+        result[target] = target_result
+    
+    return result
+\end{minted}
 % Todo : write here.
+
+After extracting the two-qubit states for all pairs ${(q_0, q_1), (q_1, q_2), \cdots, (q_{N-2}, q_{N-1})}$, then I reconstructed the circuit. 
+The first layer, with qubit pairs ${(q_0, q_1), (q_2, q_3), \cdots, (q_{2k}, q_{2k+1})}$ is straightforward to reconstruct, as done in Problem 1, Part II.
+To reconstruct the second layer, I applied a trick using Schmidt decomposition for the state of the qubits $q_i , q_{i+1}, q_{i+2} , q_{i+3}$. The state can be expressed as:
+\begin{align}
+  \ket{q_{i+3} q_{i+2} q_{i+1} q_{i+1}} &\simeq \ket{q_{i+2} q_{i+1}}\ket{q_{i+3} q_{i}} \\
+                                        &=\sum_{k=0}^3 \lambda_0 \ket{q_{i+2}^k q_{i+3}^k}\ket{q_{i}^k q_{i}^k}
+\end{align}
+From the first row, I performed Schmidt decomposition to arrive at the second row.
+Next, I implemented the unitary operation to map: $\ket{q_{i+2}^0 q_{i+3}^0} \rightarrow \ket{q_{i+2} q_{i+3}}$.
+Such process is implemented in the following code. 
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def SecondLayerCircuit(target_state, neighbor_state):
+  if len(neighbor_state) == 2:
+    state1 = neighbor_state[0]; state2 = neighbor_state[1]
+    a_jm_in = np.einsum("ij,mn->jmin",state2, state1)
+                  .reshape(4,4) # jm x in 
+
+    u, d, v = np.linalg.svd(a_jm_in)
+    e = u[:,0]
+    
+    # e -> |00> -> target state
+    U_d = TwoQubitCircuit(e)
+    U = TwoQubitCircuit(target_state)
+    
+    U_gen = (U_d.inverse()).compose(U)
+    
+    return U_gen
+  else:
+    state1 = neighbor_state[0]; 
+      state2 = np.array([1,0], dtype=np.complex64)
+    a_k_ij = np.einsum("k,ij->kij",state2, state1)
+                 .reshape(4,2) # ki x j 
+    
+    u, d, v = np.linalg.svd(a_k_ij)
+    e = u[:,0]
+    
+    U_d = TwoQubitCircuit(e)
+    U = TwoQubitCircuit(target_state)
+    
+    U_gen = (U_d.inverse()).compose(U)
+
+    return U_gen
+\end{minted}
+
 
 \bibliographystyle{plain}
 \bibliography{reference}
