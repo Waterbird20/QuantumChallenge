@@ -1,0 +1,409 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage{floatrow}
+\usepackage{physics}
+\usepackage{xcolor}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{ragged2e}
+\usepackage{esint}
+\usepackage{wrapfig}
+\usepackage{mdframed}
+\usepackage{filecontents}
+\usepackage{lipsum} 
+\usepackage{pdflscape}
+\usepackage{lscape}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{minted}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{bg}{HTML}{282828}
+\usemintedstyle{monokai}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
+%\addbibresource{reference.bib}
+
+\begin{document}
+\title{SKKU 2024 Challenge: Heisenberg Spin Glass}
+\author{Donghun Jung}
+\maketitle
+
+\section*{Part I : A first look at the Heisenberg spin glass}
+
+\subsection*{How many symmetry classes are there?}
+There are 11 symmetry classes distinguished by eigenspectra.
+
+\subsection*{For each symmetry class, provide one set of $J_{ij}$ coefficients for a model in that symmetry class.}
+\subsection*{What is the eigenspectrum of each symmetry class?}
+Class 1
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_1.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+\small
+\centering
+\begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $-1$ & $-1$ & $-1$ & $-1$ & $-1$ & $-1$  \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example1}
+    }
+\end{floatrow}
+\end{figure}
+
+Class 2
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_2.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+\small
+\centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
+        $1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
+        $1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
+        $1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
+        $1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
+        $-1$ &$1$ &$1$ &$1$ &$1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example2}
+        }
+\end{floatrow}
+\end{figure}
+
+Class 3
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_3.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
+        $1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
+        $1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
+        $1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
+        $1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
+        $1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
+        $1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
+        $1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
+        $-1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
+        $-1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
+        $-1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
+        $-1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example3}
+        }
+    \end{floatrow}
+\end{figure}
+
+Class 4
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_4.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
+        $-1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+    \caption{Example LaTeX Table} 
+    \label{tab:example4}
+    }
+    \end{floatrow}
+\end{figure}
+
+Class 5
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_5.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
+        $-1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example5}
+        }
+    \end{floatrow}
+\end{figure}
+Class 6
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_6.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
+        $1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
+        $-1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
+        \bottomrule
+    \end{tabular}}{
+    \caption{Example LaTeX Table} 
+    \label{tab:example6}
+    }
+    \end{floatrow}
+\end{figure}
+
+Class 7
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_7.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+        $1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+        $1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
+        $1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
+        $1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
+        $-1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
+        $-1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
+        $-1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
+        $-1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+    \caption{Example LaTeX Table} 
+    \label{tab:example7}
+    }
+    \end{floatrow}
+\end{figure}
+
+Class 8
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_8.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+        $1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+        $-1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
+        $-1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
+        $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
+        $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example8}
+        }
+    \end{floatrow}
+\end{figure}
+
+Class 9
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_9.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+        $-1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example9}
+    }
+    \end{floatrow}
+\end{figure}
+
+
+Class 10
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_10.pdf}%
+}{%
+  \caption{A figure}%
+}
+    \capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+        $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+        $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+        $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+        $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+        $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example10}
+    }
+    \end{floatrow}
+\end{figure}
+
+Class 11
+\begin{figure}[!h]
+    \begin{floatrow}
+    \ffigbox{%
+  \includegraphics[width=0.5\textwidth]{./figure/class_11.pdf}%
+}{%
+  \caption{A figure}%
+}
+\capbtabbox{
+    \small
+    \centering
+    \begin{tabular}{cccccc}
+        \toprule\toprule
+        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+        \midrule
+        $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+        \bottomrule
+    \end{tabular}}{
+        \caption{Example LaTeX Table} 
+        \label{tab:example11}
+    }
+    \end{floatrow}
+\end{figure}
+ 
+
+Heisenberg Spin Glass
+
+\subsection*{Do any of the symmetry classes have an eigenspectrum that is sign invariant? In other words, if you change the sign of each eigenvalue, does the overall set of eigenvalues remain unchanged?}
+
+As shown in Figure , the eigenspectrum of class 7 has sign flip invariance. 
+It is because the Hamiltonian of class 7 is still in the class 7 even after sign flip operation. 
+
+\section*{Part 2 : Adiabatic evolution to the ground state}
+
+\subsection*{Plot the eigenspectra as a function of $s$ for each symmetry class.}
+Heisenberg Spin Glass
+
+\subsection*{Plot the eigenspectrum for $H_{sg}$ as a function of $s$.}
+Heisenberg Spin Glass
+
+\subsection*{Write a program to carry out adiabatic evolution, starting from the pure mixer Hamiltonian and ending with $H_{sg}$. Two parameters govern this program: the time $\tau$ over which the adiabatic evolution takes place and the number of time steps $N$.}
+Heisenberg Spin Glass
+
+\subsection*{In order to match the target vector of sixteen probabilities by performing adiabatic evolution, what value do you need to use for $\tau$ and $N$? The exact target probabilities and the probabilities resulting from adiabatic evolution should match to three significant decimal digits.}
+Heisenberg Spin Glass
+
+\subsection*{List out the terms in $H_{sg}$ and $H_{m}$ and, for each term, provide the gate that arises when that term is exponentiated. You can use any gate in Qiskit's standard gate set. How many single-qubit gates are needed for each time step? How many two-qubit gates are needed for each time step?}
+Heisenberg Spin Glass
+
+\subsection*{Assess the circuit needed to carry out the adiabatic evolution. Roughly how many single-qubit gates and two-qubit gates would be required to achieve three-digit accuracy for the sixteen probabilities characterizing the ground state? Do you think this is practical?}
+Heisenberg Spin Glass
+
+\section*{Part 3 : A simpler path to the ground state}
+
+\subsection*{Build a numerical program as outlined above, which contains arbitrary angle parameters and qubit pairs for XY-mixers. Experiment with the XY-mixers to obtain angle parameters and qubit pairs that rotate the final state so that its probabilities match the ground state probabilities of $H_{sg}$. This problem can be solved using three XY-mixers.}
+Heisenberg Spin Glass
+
+\subsection*{Convert the numerical program into a quantum circuit. Verify that the output of this quantum circuit generates the correct probabilities for the ground state of $H_{sg}$.}
+Heisenberg Spin Glass
+
+\subsection*{Check the phases of the non-zero components of the quantum circuit created in 3.b. Are they all real? If so, you can skip this step. Otherwise, find circuit elements that you can add to the end of your circuit so that all non-zero computational basis states have the same phase.}
+Heisenberg Spin Glass
+
+\subsection*{Use your quantum circuit to measure the expectation value of the ground state of $H_{sg}$ . You will have to repeat your circuit three times - once to measure in each of the X, Y and Z computational bases. Each term of $H_{sg}$ can be measured in one of the three computational bases. Sum the contributions from the three bases and confirm that the summed energy is equal to the ground state eigenvalue}
+Heisenberg Spin Glass
+%\bibliography{reference}
+%\bibliographystyle{plain}
+
+\end{document}
