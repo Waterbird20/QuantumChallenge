@@ -41,329 +41,312 @@
 \section*{Part I : A first look at the Heisenberg spin glass}
 
 \subsection*{How many symmetry classes are there?}
-There are 11 symmetry classes distinguished by eigenspectra.
+There are 11 distinct symmetry classes, each characterized by unique eigenspectra. 
+I conducted eigen-decomposition for all 64 possible combinations of the coefficients $J_{ij}$. 
+
+The following code generates the Heisenberg Hamiltonian $H_{heisenberg}$:
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def __reset__(self):
+    qubit_idx = [idx for idx in range(self.num_qubits)]
+    combinations = itertools.combinations(qubit_idx, 2)
+    
+    H_z = np.zeros([2**self.num_qubits, 2**self.num_qubits]
+                    , dtype=np.complex128)
+    if self.coefficients2 is not None:
+        for i in range(self.num_qubits):
+            temp = [self.I for _ in range(self.num_qubits)]
+            temp[i] = self.Pauli_Z
+            H_z += self.coefficients2[i]*self._Kron(temp)
+    
+    H_heisenberg = np.zeros([2**self.num_qubits, 
+                            2**self.num_qubits]
+                            , dtype=np.complex128)
+    for coefficient, pair_idx 
+      in zip(self.coefficients1, combinations):
+        H_heisenberg += coefficient * self._H_ij(pair_idx)
+    self.H_sg = H_heisenberg + H_z
+\end{minted}
+
+In this example, \texttt{self.coefficients2} is set to \texttt{None}. 
+Within the \texttt{for} loop, each pair of qubit indices $(i,j)$ runs through unique combinations in the following sequence: 
+$(0,0)$, $(0,1)$, $(0,2)$, $(1,2)$, $(1,3)$, $(2,3)$.
+This setup ensures that each distinct interaction between qubits is included without repetition, 
+covering all possible unique two-qubit interactions in the Heisenberg Hamiltonian $H_{heisenberg}$.
+Additionally, the \texttt{\_Kron} method is implemented to maintain the Qiskit bit-ordering convention.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def _Kron(self, array):
+    prod = np.array(1)
+    if len(array) == 0:
+        return prod
+    else:
+        for element in array:
+            prod = np.kron(element, prod) 
+        return prod
+\end{minted}
+
+Two models are classified within the same symmetry class if their eigenspectra are identical. 
+Here, the eigenspectrum of a Hamiltonian represents the set of its eigenvalues. To numerically determine whether two eigenspectra are equivalent, I used the \texttt{np.allclose} function.
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+symmetry_classes = {}
+for coefficient_combination 
+  in itertools.product([1, -1], repeat=6):
+
+    eigenspectrum = H_sg(coefficient_combination, [0, 0, 0, 0])
+    symmetry_classes[coefficient_combination] = eigenspectrum
+
+classified_groups = {}
+unique_eigenspectra = {}
+class_count = 0
+
+for combination, spectrum in symmetry_classes.items():
+  is_duplicate = False
+  for class_id, class_spectrum in unique_eigenspectra.items():
+    if np.allclose(class_spectrum, spectrum._eigenSpectrum()):
+      is_duplicate = True
+      classified_groups[class_id].append(combination)
+      break
+
+  if is_duplicate:
+    continue
+  else:
+    class_count += 1
+    classified_groups[class_count] =[combination]
+    unique_eigenspectra[class_count]=spectrum._eigenSpectrum()
+\end{minted}
+
+Detailed information on eigenspectra and coefficient values can be found in the next questions.
+
+
 
 \subsection*{For each symmetry class, provide one set of $J_{ij}$ coefficients for a model in that symmetry class.}
-\subsection*{What is the eigenspectrum of each symmetry class?}
-Class 1
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_1.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-\small
-\centering
-\begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $-1$ & $-1$ & $-1$ & $-1$ & $-1$ & $-1$  \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example1}
-    }
-\end{floatrow}
+
+The Heisenberg Hamiltonian $\mathcal{H}_{\text{heisenberg}}$ is defined as:
+\begin{equation}
+  \mathcal{H}_{\text{heisenberg}} = \sum_{(i,j)} J_{i,j} H_{i,j}
+\end{equation}
+where
+\begin{equation}
+  H_{i,j} = \sigma_x^i \sigma_x^j + \sigma_y^i \sigma_y^j + \sigma_z^i \sigma_z^j 
+\end{equation}
+The interaction is ferromagnetic when $J_{ij} = 1$ and anti-ferromagnetic when $J_{ij} = -1$. 
+This Hamiltonian pocesses intrinsic symmetry: Interchange symmetry. 
+Under the interchange interaction on qubit $i$ and $j$, both of Hamiltonian eigenvalues and eigenstates remain unchanged. 
+Therefore, the elements in the same symmetry class can be generated via interchange operation. 
+
+The blue edge denotes ferromagnetic interaction and red edge denotes anti-ferromagnetic interaction.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{./figure/class1.pdf}
+  \caption{caption}
 \end{figure}
+
+\paragraph{Class 1. } The whole interactions are ferromagnetic. There is no other element even by using interchange interaction. 
+
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ & $1$ & $1$ & $1$ & $1$ & $1$  \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 2
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_2.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-\small
-\centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
-        $1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
-        $1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
-        $1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
-        $1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
-        $-1$ &$1$ &$1$ &$1$ &$1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example2}
-        }
-\end{floatrow}
-\end{figure}
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
+    $1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
+    $1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
+    $1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
+    $1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
+    $-1$ &$1$ &$1$ &$1$ &$1$ &$1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example2}
+  \end{tabular}
+\end{table}
 
 Class 3
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_3.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
-        $1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
-        $1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
-        $1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
-        $1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
-        $1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
-        $1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
-        $1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
-        $-1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
-        $-1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
-        $-1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
-        $-1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example3}
-        }
-    \end{floatrow}
-\end{figure}
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
+    $1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
+    $1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
+    $1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
+    $1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
+    $1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
+    $1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
+    $1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
+    $-1$ &$1$ &$1$ &$1$ &$-1$ &$1$   \\
+    $-1$ &$1$ &$1$ &$-1$ &$1$ &$1$   \\
+    $-1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
+    $-1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example3}
+  \end{tabular}
+\end{table}
+
 
 Class 4
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_4.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
-        $-1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
+    $-1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
+    \bottomrule
     \caption{Example LaTeX Table} 
-    \label{tab:example4}
-    }
-    \end{floatrow}
-\end{figure}
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 5
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_5.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
-        $-1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example5}
-        }
-    \end{floatrow}
-\end{figure}
-Class 6
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_6.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
-        $1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
-        $-1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
-        \bottomrule
-    \end{tabular}}{
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
+    $-1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
+    \bottomrule
     \caption{Example LaTeX Table} 
-    \label{tab:example6}
-    }
-    \end{floatrow}
-\end{figure}
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
+
+Class 6
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
+    $1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
+    $-1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 7
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_7.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
-        $1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
-        $1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
-        $1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
-        $1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
-        $-1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
-        $-1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
-        $-1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
-        $-1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+    $1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+    $1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
+    $1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
+    $1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
+    $-1$ &$1$ &$1$ &$1$ &$-1$ &$-1$   \\
+    $-1$ &$1$ &$1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$1$ &$1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$-1$ &$1$ &$1$   \\
+    $-1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
+    $-1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
+    \bottomrule
     \caption{Example LaTeX Table} 
-    \label{tab:example7}
-    }
-    \end{floatrow}
-\end{figure}
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 8
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_8.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
-        $1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
-        $-1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
-        $-1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
-        $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
-        $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example8}
-        }
-    \end{floatrow}
-\end{figure}
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+    $1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+    $-1$ &$-1$ &$1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$1$   \\
+    $-1$ &$-1$ &$-1$ &$1$ &$1$ &$-1$   \\
+    $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
+    $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 9
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_9.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
-        $-1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example9}
-    }
-    \end{floatrow}
-\end{figure}
-
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+    $-1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 10
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_10.pdf}%
-}{%
-  \caption{A figure}%
-}
-    \capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
-        $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
-        $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
-        $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
-        $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
-        $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example10}
-    }
-    \end{floatrow}
-\end{figure}
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+    $-1$ &$1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+    $-1$ &$-1$ &$1$ &$-1$ &$-1$ &$-1$   \\
+    $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$-1$   \\
+    $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
+    $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
 
 Class 11
-\begin{figure}[!h]
-    \begin{floatrow}
-    \ffigbox{%
-  \includegraphics[width=0.5\textwidth]{./figure/class_11.pdf}%
-}{%
-  \caption{A figure}%
-}
-\capbtabbox{
-    \small
-    \centering
-    \begin{tabular}{cccccc}
-        \toprule\toprule
-        $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
-        \midrule
-        $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
-        \bottomrule
-    \end{tabular}}{
-        \caption{Example LaTeX Table} 
-        \label{tab:example11}
-    }
-    \end{floatrow}
-\end{figure}
+\begin{table}[!h]
+  \begin{tabular}{cccccc}
+    \toprule\toprule
+    $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
+    \midrule
+    $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
+    \bottomrule
+    \caption{Example LaTeX Table} 
+    \label{tab:example1}
+  \end{tabular}
+\end{table}
  
+\subsection*{What is the eigenspectrum of each symmetry class?}
 
-Heisenberg Spin Glass
 
 \subsection*{Do any of the symmetry classes have an eigenspectrum that is sign invariant? In other words, if you change the sign of each eigenvalue, does the overall set of eigenvalues remain unchanged?}
 
@@ -373,10 +356,27 @@ It is because the Hamiltonian of class 7 is still in the class 7 even after sign
 \section*{Part 2 : Adiabatic evolution to the ground state}
 
 \subsection*{Plot the eigenspectra as a function of $s$ for each symmetry class.}
-Heisenberg Spin Glass
+Class 1 
+\begin{figure}
+  \begin{tabular}{ccc}
+    \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_1.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_2.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_3.pdf} \\
+    %(a) & (b) & (c) \\
+    \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_4.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_5.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_6.pdf} \\
+    %(d) & (e) & (f) \\
+    \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_7.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_8.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_9.pdf} \\
+    %(g) & (h) & (i) \\
+    \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_10.pdf}& \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_11.pdf}& \\
+    %(j) & (k) &  
+  \end{tabular}
+\caption{caption}
+\end{figure}
 
 \subsection*{Plot the eigenspectrum for $H_{sg}$ as a function of $s$.}
-Heisenberg Spin Glass
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{./figure/Eigenspectrum_Heisenberg_sg.pdf}
+  \caption{}
+\end{figure}
 
 \subsection*{Write a program to carry out adiabatic evolution, starting from the pure mixer Hamiltonian and ending with $H_{sg}$. Two parameters govern this program: the time $\tau$ over which the adiabatic evolution takes place and the number of time steps $N$.}
 Heisenberg Spin Glass

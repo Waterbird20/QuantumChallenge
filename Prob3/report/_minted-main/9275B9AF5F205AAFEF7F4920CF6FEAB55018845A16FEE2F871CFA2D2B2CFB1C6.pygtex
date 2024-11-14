@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}Kron}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{array}\PYG{p}{):}
+    \PYG{n}{prod} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{array}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+        \PYG{k}{return} \PYG{n}{prod}
+    \PYG{k}{else}\PYG{p}{:}
+        \PYG{k}{for} \PYG{n}{element} \PYG{o+ow}{in} \PYG{n}{array}\PYG{p}{:}
+            \PYG{n}{prod} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{kron}\PYG{p}{(}\PYG{n}{element}\PYG{p}{,} \PYG{n}{prod}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{prod}
+\end{Verbatim}
