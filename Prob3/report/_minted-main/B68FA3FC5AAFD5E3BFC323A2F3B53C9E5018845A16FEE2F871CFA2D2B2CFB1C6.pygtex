@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{def} \PYG{n+nf}{circuit}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{parameters}\PYG{p}{):}
+  \PYG{n}{qc} \PYG{o}{=} \PYG{n}{qiskit}\PYG{o}{.}\PYG{n}{QuantumCircuit}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)}
+  \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{):}
+    \PYG{n}{qc}\PYG{o}{.}\PYG{n}{x}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)}
+  \PYG{k}{for} \PYG{n}{pair}\PYG{p}{,} \PYG{n}{parameter} \PYG{o+ow}{in} \PYG{n+nb}{zip}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{index}\PYG{p}{,} \PYG{n}{parameters}\PYG{p}{):}
+    \PYG{n}{qc}\PYG{o}{.}\PYG{n}{rxx}\PYG{p}{(}\PYG{n}{parameter}\PYG{p}{,} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+    \PYG{n}{qc}\PYG{o}{.}\PYG{n}{ryy}\PYG{p}{(}\PYG{n}{parameter}\PYG{p}{,} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+
+  \PYG{k}{return} \PYG{n}{qc}
+\end{Verbatim}

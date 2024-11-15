@@ -1,0 +1,16 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{def} \PYG{n+nf}{ansatz}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{parameters}\PYG{p}{):}
+  \PYG{k}{if} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{index}\PYG{p}{)} \PYG{o}{!=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{parameters}\PYG{p}{):}
+    \PYG{k}{raise} \PYG{n+ne}{ValueError}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Lengh should be matched\PYGZdq{}}\PYG{p}{)}
+
+  \PYG{n}{state} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{complex64}\PYG{p}{)}
+  \PYG{n}{state}\PYG{p}{[}\PYG{l+m+mi}{14}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{1}
+
+  \PYG{n}{operation} \PYG{o}{=} \PYG{p}{[}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}XY\PYGZus{}mixer}\PYG{p}{(}\PYG{n}{pair}\PYG{p}{,} \PYG{n}{parameter}\PYG{p}{)}
+                \PYG{k}{for} \PYG{n}{pair}\PYG{p}{,} \PYG{n}{parameter}
+                \PYG{o+ow}{in} \PYG{n+nb}{zip}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{index}\PYG{p}{,} \PYG{n}{parameters}\PYG{p}{)]}
+  \PYG{k}{for} \PYG{n}{op} \PYG{o+ow}{in} \PYG{n}{operation}\PYG{p}{:}
+    \PYG{n}{state} \PYG{o}{=} \PYG{n}{op} \PYG{o}{@} \PYG{n}{state}
+
+  \PYG{k}{return} \PYG{n}{state}
+\end{Verbatim}
