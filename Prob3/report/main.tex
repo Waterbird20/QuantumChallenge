@@ -122,6 +122,7 @@ for combination, spectrum in symmetry_classes.items():
 
 Detailed information on eigenspectra and coefficient values can be found in the next questions.
 
+
 \subsection*{For each symmetry class, provide one set of $J_{ij}$ coefficients for a model in that symmetry class.}
 
 The Heisenberg Hamiltonian $\mathcal{H}_{\text{heisenberg}}$ is defined as:
@@ -132,36 +133,48 @@ where
 \begin{equation}
   H_{i,j} = \sigma_x^i \sigma_x^j + \sigma_y^i \sigma_y^j + \sigma_z^i \sigma_z^j 
 \end{equation}
-The interaction is ferromagnetic when $J_{ij} = 1$ and anti-ferromagnetic when $J_{ij} = -1$. 
-This Hamiltonian pocesses intrinsic symmetry: Interchange symmetry. 
-Under the interchange interaction on qubit $i$ and $j$, both of Hamiltonian eigenvalues and eigenstates remain unchanged. 
-Therefore, the elements in the same symmetry class can be generated via interchange operation. 
+The interaction is classified as ferromagnetic when $J_{ij} = 1$ and anti-ferromagnetic when $J_{ij} = -1$. 
+This Hamiltonian possesses intrinsic interchange symmetry, meaning that under an interchange of qubits $i$ and $j$, 
+both the eigenvalues and eigenstates of the Hamiltonian remain unchanged. 
+Consequently, all elements within the same symmetry class can be generated through such interchange operations.
 
-The blue edge denotes ferromagnetic interaction and red edge denotes anti-ferromagnetic interaction.
+In the diagram below, blue edges represent ferromagnetic interactions $(J_{ij} = 1)$,
+and red edges represent anti-ferromagnetic interactions$(J_{ij} = -1)$.
 
-\begin{figure}[h]
+\newpage
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{./figure/class1.pdf}
-  \caption{caption}
+  \includegraphics[width=0.45\textwidth]{./figure/class1.pdf}
+  \caption{Visual representation of a four-qubit system with ferromagnetic interactions. 
+  Each blue edge corresponds to a ferromagnetic interaction ($J_{ij}=1$) between qubits $q_i$and $q_j$. 
+  The system belongs to Class 1, where all interactions are ferromagnetic.}
 \end{figure}
 
-\begin{table}[!h]
+\begin{wraptable}[6]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
     \midrule
     $1$ & $1$ & $1$ & $1$ & $1$ & $1$  \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 1 of the Heisenberg Hamiltonian.} 
     \label{tab:example1}
   \end{tabular}
-\end{table}
-\paragraph{Class 1. } The whole interactions are ferromagnetic. There is no other possible element even by using interchange interaction. 
+\end{wraptable}
+\paragraph{Class 1. } The whole interactions are ferromagnetic, making $J_{ij}=1$ for every pair of qubits. Since the symmetry class remains invariant under interchange operations, no other elements can exist within this class. 
 
-Class 2
+\newpage
+\begin{figure}[!ht]
+  \begin{tabular}{cc}
+    \includegraphics[width=0.46\textwidth]{./figure/class2_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class2_2.pdf}  \\
+  \end{tabular}
+\caption{
+  Two examples of models in Class 2. Left: Model with coefficients $(1,1,1,1,-1,1)$.
+  Right: Model with coefficients $(1,1,1,1,1,-1)$, derived via qubit interchange.
+}
+\end{figure}
 
-
-\begin{table}[!h]
+\begin{wraptable}[14]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -173,23 +186,27 @@ Class 2
     $1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
     $-1$ &$1$ &$1$ &$1$ &$1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 2 of the Heisenberg Hamiltonian.} 
     \label{tab:example2}
   \end{tabular}
-\end{table}
+\end{wraptable}
+\paragraph{Class 2. } 
+The following table provides the $J_{ij}$ coefficients for Class 2 of the Heisenberg Hamiltonian, where exactly one interaction is anti-ferromagnetic.
+The figure below illustrates two examples of models in Class 2. 
+In the left figure, the coefficients are $(1,1,1,1,-1,1)$, 
+with a single anti-ferromagnetic interaction denoted by a red edge. By applying an interchange operation on qubits $q_{1}$ and $q_{2}$,
+we derive the model shown on the right, with coefficients $(1,1,1,1,1,-1)$.
+Through additional interchange operations, the remaining models listed in Table \ref{tab:example2} can be generated. 
 
+\newpage
 \begin{figure}[!h]
   \begin{tabular}{cc}
-    \includegraphics[width=0.46\textwidth]{./figure/class2_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class2_2.pdf}  \\
+    \includegraphics[width=0.46\textwidth]{./figure/class3_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class3_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 3. Left: Model with coefficients $(1,1,1,1,-1,-1)$, where qubit $q_3$ has two anti-ferromagnetic interactions denoted by red edges. Right: Model with coefficients $(1,1,-1,1,-1,1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$. }
 \end{figure}
-\paragraph{Class 2. } Only one interaction term is antiferromanetic. By using interchange operation, we can derive 6 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,1,1,1,-1,1)$, we can derive right one with coefficients $(1,1,1,1,1,-1)$ by using interchange operation on qubit $1$ and qubit $2$. 
-The other models can be derived by applying one or multiple interchange operations. 
 
-Class 3
-\begin{table}[!h]
+\begin{wraptable}[17]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -207,24 +224,18 @@ Class 3
     $-1$ &$1$ &$-1$ &$1$ &$1$ &$1$   \\
     $-1$ &$-1$ &$1$ &$1$ &$1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 3 of the Heisenberg Hamiltonian.} 
     \label{tab:example3}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
-\begin{figure}[!h]
-  \begin{tabular}{cc}
-    \includegraphics[width=0.46\textwidth]{./figure/class3_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class3_2.pdf}  \\
-  \end{tabular}
-\caption{caption}
-\end{figure}
-\paragraph{Class 3. } Two interaction terms are antiferromanetic.
-As shown in the figure, one qubit has two antiferromanetic interaction.  By using interchange operation, we can derive 12 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,1,1,1,-1,-1)$, we can derive right one with coefficients $(1,1,-1,1,-1,1)$ by using interchange operation on qubit $0$ and qubit $2$. 
-The other models can be derived by applying one or multiple interchange operations. 
+\paragraph{Class 3. } The following table provides the $J_{ij}$ coefficients for Class 3 of the Heisenberg Hamiltonian, characterized by exactly two anti-ferromagnetic interactions.
+The figure illustrates two examples of models in Class 3.
+In the left figure, the coefficients are $(1,1,1,1,-1,-1)$, with qubit $q_3$ having two anti-ferromagnetic interactions, represented by red edges. By applying an interchange operation on qubits $q_0$ and $q_2$, we derive the model shown on the right, with coefficients $(1,1,-1,1,-1,1)$.
+Through additional interchange operations, the remaining models listed in Table \ref{tab:example3} can be generated.
 
-Class 4
-\begin{table}[!h]
+\newpage
+\begin{wraptable}[14]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -234,25 +245,28 @@ Class 4
     $-1$ &$1$ &$-1$ &$1$ &$-1$ &$1$   \\
     $-1$ &$-1$ &$1$ &$-1$ &$1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 4 of the Heisenberg Hamiltonian.} 
     \label{tab:example4}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class4_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class4_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 4. Left: Model with coefficients $(1,1,1,-1,-1,-1)$, where three qubits each have two anti-ferromagnetic interactions, denoted by red edges, and the remaining qubit interacts ferromagnetically with all neighbors.
+Right: Model with coefficients $(-1,1,-1,1,-1,1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$.
+}
 \end{figure}
-\paragraph{Class 3. } Three interaction terms are antiferromanetic.
-As shown in the figure, three qubits have two antiferromanetic interactions while the remaining qubit has only ferromagnetic interaction. 
-By using interchange operation, we can derive 4 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,1,1,-1,-1,-1)$, we can derive right one with coefficients $(-1,1,-1,1,-1,1)$ by using interchange operation on qubit $0$ and qubit $2$. 
-The other models can be derived by applying one or multiple interchange operations. 
+\paragraph{Class 4. } Three interaction terms are anti-ferromagnetic. 
+As shown in the figure, three qubits have two anti-ferromagnetic interactions, while the remaining qubit has only ferromagnetic interactions. 
+By applying interchange operations, four elements within the same symmetry class can be derived.
+For example, starting from the left model in the figure with coefficients $(1,1,1,-1,-1,-1)$, we can derive the right model with coefficients $(-1,1,-1,1,-1,1)$ by applying an interchange operation on qubits $q_0$ and $q_2$. 
+The other models can be obtained by applying one or multiple interchange operations.
 
-Class 5
-\begin{table}[!h]
+
+\newpage
+\begin{wraptable}[13]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -262,25 +276,26 @@ Class 5
     $-1$ &$1$ &$1$ &$-1$ &$-1$ &$1$   \\
     $-1$ &$-1$ &$-1$ &$1$ &$1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 5 of the Heisenberg Hamiltonian.} 
     \label{tab:example5}
   \end{tabular}
-\end{table}
+\end{wraptable}
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class5_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class5_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 5. Left: Model with coefficients $(1,1,-1,1,-1,-1)$, where qubit $q_3$ has only anti-ferromagnetic interactions. Right: Model with coefficients $(1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_2$ and $q_3$.}
 \end{figure}
-\paragraph{Class 5. } Three interaction terms are antiferromanetic.
-As shown in the figure, one qubit has only antiferromanetic interactions. 
-By using interchange operation, we can derive 4 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,1,-1,1,-1,-1)$, we can derive right one with coefficients $(1,-1,1,1,-1,-1)$ by using interchange operation on qubit $2$ and qubit $3$. 
-The other models can be derived by applying one or multiple interchange operations. 
+\paragraph{Class 5. } Three interaction terms are anti-ferromagnetic. 
+As shown in the figure, one qubit has only anti-ferromagnetic interactions. 
+By applying interchange operations, four elements within the same symmetry class can be derived.
+For example, starting from the left model in the figure with coefficients $(1,1,-1,1,-1,-1)$, 
+we can derive the right model with coefficients $(1,-1,1,1,-1,-1)$ by applying an interchange operation on qubits $q_2$ and $q_3$. 
+The other models can be obtained by applying one or multiple interchange operations.
+Note that this symmetry class can also be derived by applying a sign-flip operation to the elements of symmetry Class 4.
 
-
-Class 6
-\begin{table}[!h]
+\newpage
+\begin{wraptable}[12]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -289,25 +304,26 @@ Class 6
     $1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
     $-1$ &$1$ &$1$ &$1$ &$1$ &$-1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 6 of the Heisenberg Hamiltonian.} 
     \label{tab:example6}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class6_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class6_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 6. Left: Model with coefficients $(1,-1,1,1,-1,1)$, where each qubit has one anti-ferromagnetic interaction. Right: Model with coefficients $(1,1,-1,-1,1,1)$, derived by applying an interchange operation on qubits $q_0$ and $q_1$.}
 \end{figure}
-\paragraph{Class 6. } Two interaction terms are antiferromanetic.
-As shown in the figure, all qubit has only one antiferromanetic interaction unlike class 2 symmetry group that one qubit has two antiferromanetic interaction. 
-By using interchange operation, we can derive 3 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,-1,1,1,-1,1)$, we can derive right one with coefficients $(1,1,-1,-1,1,1)$ by using interchange operation on qubit $0$ and qubit $1$. 
-The other model can be derived by applying one or multiple interchange operations. 
+\paragraph{Class 6. } Two interaction terms are anti-ferromagnetic. 
+As shown in the figure, each qubit has exactly one anti-ferromagnetic interaction, unlike the Class 2 symmetry group, where one qubit has two anti-ferromagnetic interactions. 
+By applying interchange operations, three elements within the same symmetry class can be derived.
+For example, starting from the left model in the figure with coefficients $(1,-1,1,1,-1,1)$, we can derive the right model with coefficients $(1,1,-1,-1,1,1)$ by applying an interchange operation on qubits $q_0$ and $q_1$. 
+The remaining model can be derived by applying one or multiple interchange operations.
 
-Class 7
-\begin{table}[!h]
+
+\newpage
+\begin{wraptable}[19]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -325,27 +341,26 @@ Class 7
     $-1$ &$-1$ &$1$ &$1$ &$1$ &$-1$   \\
     $-1$ &$-1$ &$1$ &$1$ &$-1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 7 of the Heisenberg Hamiltonian.} 
     \label{tab:example7}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class7_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class7_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Figure 7: Two examples of models in Class 7. Left: Model with coefficients $(1,-1,-1,1,-1,1)$, where each qubit has one or two anti-ferromagnetic interactions. Right: Model with coefficients $(1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$. The symmetry class also allows sign-flip operations, preserving the class structure.}
 \end{figure}
-\paragraph{Class 7. } Three interaction terms are antiferromanetic.
-As shown in the figure, each qubit has one or two antiferromanetic interactions. 
-In this case, this symmetry class also pocesses sign-flip symmetry. 
-After the sign flip operation, the Hamiltonian is still in the same class. 
-By using interchange operation and sign flip operation, we can derive 12 elements as the same symmetry class.
-For example, from the left one in the figure with coefficients $(1,-1,-1,1,-1,1)$, we can derive right one with coefficients $(1,-1,1,1,-1,-1)$ by using interchange operation on qubit $0$ and qubit $2$. 
-The other model can be derived by applying one or multiple interchange operations and sign flip operation. 
+\paragraph{Class 7. } Three interaction terms are anti-ferromagnetic. As shown in the figure, each qubit has either one or two anti-ferromagnetic interactions. This symmetry class also possesses sign-flip symmetry, meaning that after flipping the signs of all 
+$J_{ij}$coefficients, the resulting Hamiltonian remains within the same symmetry class.
+By applying interchange operations and sign-flip operations, 12 elements within this symmetry class can be derived. 
+For example, starting from the left model in the figure with coefficients $(1,-1,-1,1,-1,1)$, we can derive the right model with coefficients $(1,-1,1,1,-1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_2$. 
+The other models can be obtained by applying one or multiple interchange operations and sign-flip operations.
 
-Class 8
-\begin{table}[!h]
+
+\newpage
+\begin{wraptable}[20]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -363,29 +378,30 @@ Class 8
     $-1$ &$-1$ &$-1$ &$1$ &$-1$ &$1$   \\
     $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 8 of the Heisenberg Hamiltonian.} 
     \label{tab:example8}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class8_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class8_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 8. Left: Model with coefficients $(-1,-1,-1,-1,1,1)$, where one qubit ($q_3$) has two ferromagnetic interactions. Right: Model with coefficients $(-1,-1,1,-1,1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$.}
 \end{figure}
 \paragraph{Class 8. } 
-From now on, it is convenient to focus on ferromagnetic interaction.
-Two interaction terms are ferromagnetic.
-As shown in the figure, one qubit has two antiferromanetic interaction. 
-By using interchange operation, we can derive 12 elements as the same symmetry class. 
-For example, from the left one in the figure with coefficients $(-1,-1,-1,-1,1,1)$, we can derive right one with coefficients $(-1,-1,1,-1,1,-1)$ by using interchange operation on qubit $0$ and qubit $2$. 
-The other models can be derived by applying one or multiple interchange operations. 
-Note that this symmetry class can also derived by sign flip operation on symmetry class 3.
+From this point onward, it is convenient to focus on ferromagnetic interactions. 
+In this symmetry class, two interaction terms are ferromagnetic. As shown in the figure, one qubit has two ferromagnetic interactions, 
+while the remaining qubits have anti-ferromagnetic interactions.
+By applying interchange operations, 12 elements within the same symmetry class can be derived. 
+For example, starting from the left model in the figure with coefficients $(-1,-1,-1,-1,1,1)$, 
+we can derive the right model with coefficients $(-1,-1,1,-1,1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_2$. 
+The other models can be obtained by applying one or multiple interchange operations.
+Note that this symmetry class can also be derived by applying a sign-flip operation to the elements of symmetry Class 3.
 
 
-Class 9
-\begin{table}[!h]
+\newpage
+\begin{wraptable}[12]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -394,28 +410,27 @@ Class 9
     $-1$ &$1$ &$-1$ &$-1$ &$1$ &$-1$   \\
     $-1$ &$-1$ &$1$ &$1$ &$-1$ &$-1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 9 of the Heisenberg Hamiltonian.} 
     \label{tab:example9}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class9_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class9_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 9. Left: Model with coefficients $(-1,1,-1,-1,1,-1)$, where each qubit has one anti-ferromagnetic interaction. Right: Model with coefficients $(-1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_1$.}
 \end{figure}
 \paragraph{Class 9. } 
-Two interaction terms are ferromagnetic.
-As shown in the figure, each qubit has only one antiferromanetic interaction. 
-By using interchange operation, we can derive 3 elements as the same symmetry class. 
-For example, from the left one in the figure with coefficients $(-1,1,-1,-1,1,-1)$, we can derive right one with coefficients $(-1,-1,1,1,-1,-1)$ by using interchange operation on qubit $0$ and qubit $1$. 
-The other model can be derived by applying one or multiple interchange operations. 
-Note that this symmetry class can also derived by sign flip operation on symmetry class 6.
+Two interaction terms are ferromagnetic. As shown in the figure, each qubit has exactly one anti-ferromagnetic interaction. 
+By applying interchange operations, three elements within the same symmetry class can be derived.
+For example, starting from the left model in the figure with coefficients $(-1,1,-1,-1,1,-1)$, 
+we can derive the right model with coefficients $(-1,-1,1,1,-1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_1$. 
+The remaining model can be derived by applying one or multiple interchange operations.
+Note that this symmetry class can also be obtained by performing a sign-flip operation on the elements of symmetry Class 6.
 
-
-Class 10
-\begin{table}[!h]
+\newpage
+\begin{wraptable}[14]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
@@ -427,49 +442,53 @@ Class 10
     $-1$ &$-1$ &$-1$ &$-1$ &$1$ &$-1$   \\
     $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficients $J_{ij}$ for Class 10 of the Heisenberg Hamiltonian.} 
     \label{tab:example10}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class10_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class10_2.pdf}  \\
   \end{tabular}
-\caption{caption}
+\caption{Two examples of models in Class 10. Left: Model with coefficients $(-1,-1,-1,-1,1,-1)$, where only one interaction term is ferromagnetic. Right: Model with coefficients $(-1,-1,1,-1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_1$.}
 \end{figure}
 \paragraph{Class 10. } 
-Only one interaction term is ferromagnetic.
-By using interchange operation, we can derive 6 elements as the same symmetry class. 
-For example, from the left one in the figure with coefficients $(-1,-1,-1,-1,1,-1)$, we can derive right one with coefficients $(-1,-1,1,-1,-1,-1)$ by using interchange operation on qubit $0$ and qubit $1$. 
-The other model can be derived by applying one or multiple interchange operations. 
-Note that this symmetry class can also derived by sign flip operation on symmetry class 2.
+Only one interaction term is ferromagnetic. 
+By applying interchange operations, six elements within the same symmetry class can be derived.
+For example, starting from the left model in the figure with coefficients $(-1,-1,-1,-1,1,-1)$, 
+we can derive the right model with coefficients $(-1,-1,1,-1,-1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_1$. 
+The remaining models can be obtained by applying one or multiple interchange operations.
+Note that this symmetry class can also be derived by applying a sign-flip operation to the elements of symmetry Class 2.
 
-Class 11
-\begin{table}[!h]
+\newpage
+\begin{wraptable}[7]{r}{0.5\textwidth}
   \begin{tabular}{cccccc}
     \toprule\toprule
     $J_{01}$ & $J_{02}$ & $J_{03}$ & $J_{12}$ & $J_{13}$ & $J_{23}$ \\ 
     \midrule
     $-1$ &$-1$ &$-1$ &$-1$ &$-1$ &$-1$   \\
     \bottomrule
-    \caption{Example LaTeX Table} 
+    \caption{Coefficient $J_{ij}$ for Class 11 of the Heisenberg Hamiltonian.} 
     \label{tab:example11}
   \end{tabular}
-\end{table}
+\end{wraptable}
 
 \begin{figure}[!h]
   \centering
   \includegraphics[width=0.5\textwidth]{./figure/class11.pdf}
-  \caption{caption}
+  \caption{The unique model in Class 11, with coefficients $(-1, -1, -1, -1, -1, -1)$. All interactions are anti-ferromagnetic, and no additional elements exist within this class, even under interchange operations. This class can also be derived through sign-flip operations on Class 1 models.}
 \end{figure}
 \paragraph{Class 11. } 
-The whole interactions are antiferromagnetic. There is no other possible element even by using interchange interaction. 
-This symmetry class can be derived from sign flip operation on symmetry class 1.
+All interactions in this class are anti-ferromagnetic. 
+There are no additional possible elements, even when applying interchange operations.
+This symmetry class can also be derived by applying a sign-flip operation to the elements of symmetry Class 1.
+
+\newpage
 
 \subsection*{What is the eigenspectrum of each symmetry class?}
 
-\begin{figure}
+\begin{figure}[h!]
   \begin{tabular}{ccc}
     \includegraphics[width=0.3\textwidth]{./figure/class_1.pdf} & \includegraphics[width=0.3\textwidth]{./figure/class_2.pdf} & \includegraphics[width=0.3\textwidth]{./figure/class_3.pdf} \\
     %(a) & (b) & (c) \\
@@ -480,18 +499,31 @@ This symmetry class can be derived from sign flip operation on symmetry class 1.
     \includegraphics[width=0.3\textwidth]{./figure/class_10.pdf}& \includegraphics[width=0.3\textwidth]{./figure/class_11.pdf}& \\
     %(j) & (k) &  
   \end{tabular}
-\caption{caption}
+\caption{Eigenspectra of the 11 symmetry classes. Higher energy levels are shown in red tones, while lower energy levels are shown in blue tones. The number of cells at each energy level represents its degeneracy. }
+\label{fig:energylevels}
 \end{figure}
+
+This figure presents the eigenspectra for each of the 11 symmetry classes. The energy levels are represented by horizontal lines, with color indicating their relative magnitude: higher energy levels are shown in red tones, while lower energy levels are shown in blue tones. The eigenvalues are labeled as 
+$E_0 < E_1 < E_2 < \cdots$, and the number of cells at each energy level corresponds to its degeneracy.
+An important feature is the energy inversion correspondence between certain classes:
+\begin{itemize}
+  \item Class 1 and Class 11 have eigenspectra that are related by flipping the signs of all energy levels.
+  \item Class 2 and Class 10 have eigenspectra that are related by flipping the signs of all energy levels.
+  \item Class 3 and Class 8 have eigenspectra that are related by flipping the signs of all energy levels.
+  \item Class 4 and Class 5 have eigenspectra that are related by flipping the signs of all energy levels.
+  \item Class 6 and Class 9 have eigenspectra that are related by flipping the signs of all energy levels.
+\end{itemize}
+
 
 \subsection*{Do any of the symmetry classes have an eigenspectrum that is sign invariant? In other words, if you change the sign of each eigenvalue, does the overall set of eigenvalues remain unchanged?}
 
-As shown in Figure , the eigenspectrum of class 7 has sign flip invariance. 
-It is because the Hamiltonian of class 7 is still in the class 7 even after sign flip operation. 
+As shown in Figure \ref{fig:energylevels}, the eigenspectrum of Class 7 exhibits sign-flip invariance. This occurs because the Hamiltonian of Class 7 remains within Class 7 even after a sign-flip operation is applied to all its eigenvalues.
+
+\newpage
 
 \section*{Part 2 : Adiabatic evolution to the ground state}
 
 \subsection*{Plot the eigenspectra as a function of $s$ for each symmetry class.}
-Class 1 
 \begin{figure}[!h]
   \begin{tabular}{ccc}
     \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_1.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_2.pdf} & \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_3.pdf} \\
@@ -503,17 +535,31 @@ Class 1
     \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_10.pdf}& \includegraphics[width=0.3\textwidth]{./figure/Eigenspectrum_class_11.pdf}& \\
     %(j) & (k) &  
   \end{tabular}
-\caption{caption}
+\caption{Evolution of eigenvalues as a function of the interpolation parameter $s$ for the 11 symmetry classes. Red-tone lines represent higher energy eigenvalues, while violet-tone lines correspond to lower energy levels, including the ground state. }
+\label{fig:Eigenspectra_s}
 \end{figure}
+The figure illustrates the evolution of eigenvalues for each of the 11 symmetry classes as a function of the interpolation parameter $s$, which varies from 0 to 1. The horizontal axis represents $s$, 
+while the vertical axis corresponds to energy eigenvalues. Red-tone lines indicate higher energy eigenvalues, whereas violet-tone lines denote lower energy levels, including the ground state. 
+As $s$ progresses from 0 (the ground state of the mixer Hamiltonian $H_m$) to 1 (the Heisenberg spin glass Hamiltonian $H_{sg}$), the eigenvalues shift dynamically. 
+Notably, in several symmetry classes, the ground state crosses with higher energy eigenstates at intermediate $s$ values. 
+These crossings present critical points where the adiabatic algorithm may fail, as they allow the probability to leak from the ground state into excited states, undermining the system's adiabatic evolution.
 
 \subsection*{Plot the eigenspectrum for $H_{sg}$ as a function of $s$.}
 \begin{figure}[!h]
   \centering
   \includegraphics[width=0.9\textwidth]{./figure/Eigenspectrum_Heisenberg_sg.pdf}
-  \caption{}
+  \caption{Evolution of eigenvalues for the modified Heisenberg spin glass Hamiltonian $H_{sg}$ during adiabatic evolution. The horizontal axis represents the interpolation parameter $s$, while the vertical axis shows energy eigenvalues. Red-tone lines denote higher energy eigenvalues, and blue-tone lines denote lower energy eigenvalues, including the ground state. Notably, the ground state eigenvalue does not cross with any higher energy eigenvalues, ensuring adiabatic evolution without transitions to excited states.}
+  \label{fig:adiabatic_H_sg}
 \end{figure}
 
+Figure \ref{fig:adiabatic_H_sg} shows the evolution of the eigenvalues for the modified Heisenberg spin glass Hamiltonian 
+$H_{sg}$ during adiabatic evolution, as the interpolation parameter $s$ varies from 0 to 1. The horizontal axis represents $s$, 
+while the vertical axis represents the energy eigenvalues. Red-tone lines correspond to higher energy eigenvalues, while violet-tone lines represent lower energy eigenvalues, including the ground state.
+A key observation is that during the adiabatic evolution, the ground state eigenvalue (lowest violet line) does not cross with any higher energy eigenvalues. This absence of level crossings ensures that the system can reliably remain in the ground state throughout the adiabatic process.
+
 \subsection*{Write a program to carry out adiabatic evolution, starting from the pure mixer Hamiltonian and ending with $H_{sg}$. Two parameters govern this program: the time $\tau$ over which the adiabatic evolution takes place and the number of time steps $N$.}
+The following program carries out adiabatic evolution, starting from the pure mixer Hamiltonian and ending with $H_{sg}$.
+Two parameters govern the evolution: $\tau$, the total evolution time, and $N$, the number of time steps.
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -532,27 +578,146 @@ def AdiabaticEvolution(self, tau, N):
 \end{minted}
 
 \subsection*{In order to match the target vector of sixteen probabilities by performing adiabatic evolution, what value do you need to use for $\tau$ and $N$? The exact target probabilities and the probabilities resulting from adiabatic evolution should match to three significant decimal digits.}
-The required running time for adiabatic evolution is known to the eigenspectrum of $H_{s}$, in particular the energy gap, $\delta$,  between the two lowest enery eigenvalues. 
-The time for adiabatic evolution must obey:
+The required running time for adiabatic evolution depends on the eigenspectrum of $H_{sg}$, particularly the energy gap, $\triangle$,  between the two lowest energy eigenvalues. The adiabatic evolution time $\tau$ must satisfy the following condition:
 \begin{equation}
   \tau \gg \frac{\epsilon}{\triangle^{2}}
 \end{equation}
-where $\triangle = \min_{0\leq s \leq 1} (E_1 (s) - E_0 (s))$ and $\epsilon$ is the largest value of $H_{P} - H_{0}$. 
-In our case, $\triangle \simeq 0.2666$ and $\epsilon \simeq 17.79$, then, we have $\tau \simeq 250.4$. 
-Then, I tuned $\tau$ and the number of step $N$, which is determined by $dt$, I found that $tau=1000$ and $N=2000$ yield our desired result. 
+where $\triangle = \min_{0\leq s \leq 1} (E_1 (s) - E_0 (s))$ is the minimum energy gap between the ground state and the first excited state, 
+and $\epsilon$ is is the largest eigenvalue of the operator, $H_{sg} - H_{m}$, representing the difference between the final Hamiltonian and the initial mixer Hamiltonian.
 
+In our case, $\triangle \simeq 0.2666$ and $\epsilon \simeq 17.79$, then, we have $\tau \simeq 250.4$. 
+After further tuning, I found that using $\tau=1000$ and $N=2000$(with time step size $dt$ determined accordingly)
+produces the desired result, ensuring that the target probabilities and those obtained from adiabatic evolution match to three significant decimal places.
 
 \subsection*{List out the terms in $H_{sg}$ and $H_{m}$ and, for each term, provide the gate that arises when that term is exponentiated. You can use any gate in Qiskit's standard gate set. How many single-qubit gates are needed for each time step? How many two-qubit gates are needed for each time step?}
-Heisenberg Spin Glass
+Given the Hamiltonians  $H_{sg}$ and $H_{m}$ we have:
+\begin{align}
+  H_{sg} &= \sum_{(i,j)} J_{i,j} H_{i,j} + \sum_{i=0}^{3} h_{i}\sigma_{z}^{i} \\
+  H_{m} &= \sum_{i=0}^{3} \sigma_x^{i} 
+\end{align}
+where $H_{ij} =\sigma_x^{i}\sigma_x^{j} +\sigma_y^{i}\sigma_y^{j} +\sigma_z^{i}\sigma_z^{j} $.
+The coefficients are:
+\begin{align*}
+  J_{01} =-1 && J_{02} = 2 && J_{03} = 3 \\
+  J_{12} =-2 && J_{13} =-3 && J_{23} =-4 
+\end{align*}
+and
+\begin{align*}
+  h_0 = 1 && h_1 = -1 && h_2 = 2 && h_3 = 3.
+\end{align*}
+For each time step in the adiabatic simulation, the time-dependent Hamiltonian $H(s)$ can be expanded as:
+\begin{align}
+  H(s) &= (1-s)H_{m} + sH_{sg} \\
+  &= H_{x} + H_{y} + H_{z}
+\end{align}
+where:
+\begin{align}
+  H_{x}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_x^{i}\sigma_x^{j} + (1-s) \sum_{i=0}^{3} \sigma_x^{i} \\
+  H_{y}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_y^{i}\sigma_y^{j} \\
+  H_{z}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_z^{i}\sigma_z^{j} + s \sum_{i=0}^{3} h_i \sigma_z^{i} 
+\end{align}
+As the time steps are small enough, assuming that all terms in $H_{x}(s)$, $H_{y}(s)$ and $H_{z}(s)$ commute, 
+we can separately exponentiate each term at each time step. For each time step (except the last), the following gates are needed:
+\begin{itemize}
+  \item Single-qubit gates
+  \begin{itemize}
+    \item 4 RX gates for $\sigma_x^{i}$ terms in $H_x (s)$ except for $s=1$
+    \item 4 RZ gates for $\sigma_z^{i}$ terms in $H_z (s)$
+  \end{itemize}
+  \item Two-qubit gates
+  \begin{itemize}
+    \item 6 RXX gates for $\sigma_x^{i}\sigma_x^{j}$ terms in $H_x(s)$
+    \item 6 RYY gates for $\sigma_y^{i}\sigma_y^{j}$ terms in $H_y(s)$
+    \item 6 RZZ gates for $\sigma_z^{i}\sigma_z^{j}$ terms in $H_z(s)$
+  \end{itemize}
+\end{itemize}
+
+Therefore, for each time step, 8 single-qubit gates and 18 two-qubit gates are required. In the final time step, where 
+RX gates are unnecessary, only 4 single-qubit gates and 18 two-qubit gates are needed.
+
+\paragraph{What if the time step is not small enough?}
+
+When the time step $\triangle t$ is not sufficiently small, the terms in $H_{x}, H_{y}, H_{z}$ are all commutable with each other.
+This necessitates the use of a Trotter-Suzuki decomposition to approximate the time propagator. For a given time interval $t \sim t + \triangle t$.
+where total evolution time is $\tau$, the time propagator is:
+\begin{equation}
+  e^{-i H \triangle t} = e^{-i \triangle t \left(H_x\left(\frac{t+\triangle t}{\tau}\right)+H_y\left(\frac{t+\triangle t}{\tau}\right)+H_z\left(\frac{t+\triangle t}{\tau}\right)\right) }
+\end{equation}
+Here $t+\triangle t$ ensures $s=1$ at the final time step. 
+Using $t$, would cause no evolution in the first step where $s=0$ as the initialized $+$ state is already an eigenstate of the first propagator.
+
+To address the non-commutativity, we apply Trotter-Suzuki decomposition:
+\begin{enumerate}
+  \item First-order approximation:
+  \begin{equation}
+    U(t)_1 = e^{-i \triangle t H_x\left(\frac{t+\triangle t}{\tau}\right)}e^{-i \triangle t H_y\left(\frac{t+\triangle t}{\tau}\right)}e^{-i \triangle t H_z\left(\frac{t+\triangle t}{\tau}\right)}
+  \end{equation}
+  \item Second-order approximation:
+  \begin{equation}
+    U(t)_2 = U\left(\frac{t}{2}\right)_1^T U\left(\frac{t}{2}\right)_1
+  \end{equation}
+  \item Fourth-order approximation:
+  \begin{equation}
+    U(t)_4 = U\left(\alpha t\right)_2 U\left(\alpha t\right)_2 U\left((1 -4\alpha) t\right)_2 U\left(\alpha t\right)_2 U\left(\alpha t\right)_2
+  \end{equation}
+\end{enumerate}
+where $\alpha = \frac{1}{4-4^{\frac{1}{3}}}$.
+
+Using the fourth-order Trotter-Suzuki approximation, each time step involves exponentiating $H_x$, $H_y$, and $H_z$.
+\begin{enumerate}
+  \item Exponentiating $H_x$
+  \begin{itemize}
+    \item 10 terms (for all steps except the last).
+    \item Requires 6 RXX gates and 4 RX gates
+  \end{itemize}
+  \item Exponentiating $H_y$
+  \begin{itemize}
+    \item 6 terms.
+    \item Requires 6 RYY gates 
+  \end{itemize}
+  \item Exponentiating $H_z$
+  \begin{itemize}
+    \item 10 terms.
+    \item Requires 6 RZZ and 4 RZ gates,
+  \end{itemize}
+\end{enumerate}
+
+%Here, in the fourth-order Trotter-Suzuki decomposition, the sequence starts and ends with exponentiated $H_z$ terms.
+%Thus, in practice, 6 RZZ gates and 4 RZ gates can be omitted for each complete time step, reducing gate costs.
+
+For each time step in the fourth-order Trotter-Suzuki approximation, the circuit involves exponentiating the terms in  $H_x$,  $H_y$, and  $H_z$.
+Specifically, $H_x$ requires 6 RXX gates and 4 RX gates, $H_y$ requires 6 RYY gates, and  $H_z$ requires 6 RZZ gates and 4 RZ gates. 
+However, due to the structure of the Trotter-Suzuki sequence, the first and last exponentiated  $H_z$ terms overlap, allowing the omission of 6 
+RZZ gates and 4 RZ gates in each time step. As a result, a typical time step requires 30 RXX gates, 60 RYY gates, and 30 RZZ gates, along with 20 RX and 20 RZ single-qubit gates, 
+totaling 120 two-qubit gates and 40 single-qubit gates. For the final time step, where 
+$s=1$, the RX gates are no longer needed, reducing the single-qubit gate count to 20, while the two-qubit gate count remains at 120.
+
 
 \subsection*{Assess the circuit needed to carry out the adiabatic evolution. Roughly how many single-qubit gates and two-qubit gates would be required to achieve three-digit accuracy for the sixteen probabilities characterizing the ground state? Do you think this is practical?}
-It seems that the adiabatic evolution is not that practical.
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{figure/ionq_forte.png}
+\caption{IONQ Forte Details.}
+\label{fig:ionq_forte}
+\end{figure}
+The adiabatic evolution approach appears to be impractical. As discussed in the previous question, each time step requires 8 single-qubit gates and 18 two-qubit gates. 
+To achieve three-digit accuracy for the sixteen probabilities characterizing the ground state, 
+$N=1000$ time steps are needed. This results in a total of roughly 8000 single-qubit gates and 18,000 two-qubit gates.
+
+Since two-qubit gate errors dominate in quantum devices, their impact is critical. According to Figure \ref{fig:ionq_forte}, the IONQ Forte device has a two-qubit gate error rate of $p=1.530 \times 10^{-2}$. 
+The probability of at least one gate failure during the entire sequence can be calculated as:
+\begin{equation}
+  P_{\text{failure}} = 1-(1-p)^{18000}.
+\end{equation}
+Given the high number of gates, this probability is effectively 1, indicating that nearly every execution will contain errors. 
+Reducing the number of time steps $N$might seem like a solution, but doing so would require using Trotter-Suzuki approximations, which increase the number of two-qubit gates per time step.
+
+As a result, the cumulative gate errors would still prevent accurate adiabatic simulation toward the ground state. 
+Under current NISQ hardware limitations, this makes adiabatic evolution impractical for achieving the desired level of accuracy.
 
 \section*{Part 3 : A simpler path to the ground state}
 
 \subsection*{Build a numerical program as outlined above, which contains arbitrary angle parameters and qubit pairs for XY-mixers. Experiment with the XY-mixers to obtain angle parameters and qubit pairs that rotate the final state so that its probabilities match the ground state probabilities of $H_{sg}$. This problem can be solved using three XY-mixers.}
-I used ansatz the state, initialized to $\ket{1110}$ first and three XY-mixer acting on qubit-0 and -1, qubit-0 and -2, and qubit-0 and -3. 
-The following code performs the same operation:
+I used an ansatz initialized to the $\ket{1110}$ state, followed by three XY-mixers acting on the qubit pairs (qubit-0 and qubit-1), (qubit-0 and qubit-2), and (qubit-0 and qubit-3). The following code performs these operations:
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -571,11 +736,40 @@ def ansatz(self, parameters):
 
   return state
 \end{minted}
+After constructing the ansatz, the probabilities of the resulting state are compared with the probability amplitudes of the exact ground state obtained using \texttt{np.linalg.eigvalsh}. The following cost function calculates the difference between the two:
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def cost(self, parameters):
+  state = self.ansatz(parameters)
+  amps = np.abs(state)**2
+  cost = np.linalg.norm(amps - self.target)
+
+  return cost
+\end{minted}
+Finally, we use the \texttt{scipy.optimize.minimize} method to optimize the circuit parameters for the XY-mixer. This optimization routine adjusts the angles to minimize the cost function, ensuring the ansatz approximates the ground state as closely as possible:
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def optimize(self):
+  random_para = np.random.rand(3)*2*np.pi
+  res = scipy.optimize.minimize(self.cost, 
+              random_para, method="L-BFGS-B")
+
+  return res
+\end{minted}
 
 \subsection*{Convert the numerical program into a quantum circuit. Verify that the output of this quantum circuit generates the correct probabilities for the ground state of $H_{sg}$.}
-Noting that $\left[\sigma_x^{i}\sigma_x^{j}, \sigma_y^{i}\sigma_y^{j} \right] = 0$ the XY-mixer can be decomposed into $e^{-i\frac{\theta}{2} \left( \sigma_x^{i}\sigma_x^{j} + \sigma_y^{i}\sigma_y^{j}\right)} = e^{-i\frac{\theta}{2}  \sigma_x^{i}\sigma_x^{j}} e^{-i\frac{\theta}{2}  \sigma_y^{i}\sigma_y^{j}}$, that is, a combination of RXX gate and RYY gate.
-Then, our quantum circuit can be implemented (i) apply X gate on qubit $1,2,3$, (ii) apply RXX and RYY gate on (0,1), (0,2), (0,3) qubits. 
-This will yield a state that produces the similar signal distribution with the exact ground state. The code is implemented as:
+Noting that $\left[\sigma_x^{i}\sigma_x^{j}, \sigma_y^{i}\sigma_y^{j} \right] = 0$ the XY-mixer operator can be decomposed as follows:
+\begin{equation}
+  e^{-i\frac{\theta}{2} \left( \sigma_x^{i}\sigma_x^{j} + \sigma_y^{i}\sigma_y^{j}\right)} = e^{-i\frac{\theta}{2}  \sigma_x^{i}\sigma_x^{j}} e^{-i\frac{\theta}{2}  \sigma_y^{i}\sigma_y^{j}}
+\end{equation}
+This decomposition corresponds to a combination of the RXX gate and the RYY gate, respectively.
+
+To construct the quantum circuit:
+First, Apply X gates to qubits 1, 2, and 3 to initialize the system in the $\ket{1110}$ state, Second,
+Apply parameterized RXX and RYY gates on the qubit pairs (0,1), (0,2), and (0,3), corresponding to the XY-mixer operations.
+This quantum circuit prepares a state that closely generates a probability distribution similar to the exact ground state. The implementation is as follows:
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -591,22 +785,26 @@ def circuit(self, parameters):
 \end{minted}
 
 \subsection*{Check the phases of the non-zero components of the quantum circuit created in 3.b. Are they all real? If so, you can skip this step. Otherwise, find circuit elements that you can add to the end of your circuit so that all non-zero computational basis states have the same phase.}
-The exact ground state has only real coefficients whose sign is $(+,+,+,-)$ in a order of $\ket{0111}, \ket{1011},\ket{1101},\ket{1110}$.
-However, the circuit shown above generates a state whose coefficient of $ket{1110}$ is real while other coefficients are pure imaginary. 
-\begin{align}
+The exact ground state of $H_{sg}$ has real coefficients with signs $(+,+,+,-)$ corresponding to the basis states $\ket{0111}, \ket{1011},\ket{1101},\ket{1110}$.
+However, the quantum circuit constructed above generates a state where the coefficient of $ket{1110}$ is real, while the other coefficients are purely imaginary. Specifically, the state produced by the circuit can be expressed as: 
+\begin{align*}
+  &
   e^{-i\frac{\theta_{3}}{2} \left( \sigma_x^{0}\sigma_x^{3} + \sigma_y^{0}\sigma_y^{3}\right)}
   e^{-i\frac{\theta_{2}}{2} \left( \sigma_x^{0}\sigma_x^{2} + \sigma_y^{0}\sigma_y^{2}\right)}
   e^{-i\frac{\theta_{1}}{2} \left( \sigma_x^{0}\sigma_x^{1} + \sigma_y^{0}\sigma_y^{1}\right)}
-  \ket{1110} &= -i\cos\theta_{1}\cos\theta_{2}\sin\theta_{3}\ket{0111} +i\cos\theta_{1}\sin\theta_{2}\ket{1011} -i\sin\theta_{1} \ket{1101} - \cos\theta_{1}\cos\theta_{2}\cos\theta_{3}\ket{1110}
-\end{align}
-For convenience, let me denote it as a vector $(-i\cos\theta_{1}\cos\theta_{2}\sin\theta_{3}, i\cos\theta_{1}\sin\theta_{2}\ket{1011} -i\sin\theta_{1} , - \cos\theta_{1}\cos\theta_{2}\cos\theta_{3})$.
-After applying RZ gate on qubit 0 with an angle $\frac{\pi}{2}$, to make imaginary terms to real.
-Then next we should tune the sign of each term to be  $(+,+,+,-)$ or  $(-,-,-,+)$. 
-Noting that a RZ gate with angle $\pi$ has effect that no sign change when the state of target qubit is 0, sign change otherwise. 
-The solution is quite simple. If the sign of a term is differ from the one of $\ket{1110}$, there is not any required additional operations. 
-Even, there is another $R_{z}(\pi)$ operation on the other qubit there is no other change on that sign relation. 
-Therefore, if the sign of the coefficients of a basis whose $0$ state is on $i$ qubit is same with the one of $\ket{1110}$, apply $R_z{\pi}$ on qubit $i$. 
-This will results in correct ground state. The full code implementation including using XY-mixer and phase adjustment is below:
+  \ket{1110} \\
+  =& -i\cos\theta_{1}\cos\theta_{2}\sin\theta_{3}\ket{0111} +i\cos\theta_{1}\sin\theta_{2}\ket{1011}\\
+  &-i\sin\theta_{1} \ket{1101} - \cos\theta_{1}\cos\theta_{2}\cos\theta_{3}\ket{1110}
+\end{align*}
+To convert the imaginary coefficients to real values, apply an $R_{z}\left(\frac{\pi}{2}\right)$ gate to qubit 0.
+This operation rotates the phases of the basis states such that all imaginary components become real.
+After correcting the phases, the signs of the coefficients need to match the target  $(+,+,+,-)$ or  $(-,-,-,+)$. 
+An $R_z (\pi)$ gate is applied conditionally:
+\begin{itemize}
+  \item If a basis state has the same sign as $\ket{1110}$, no further operation is needed.
+  \item Otherwise, apply an $R_z (\pi)$ gate to the corresponding qubit to flip the sign appropriately.
+\end{itemize}
+The following code implements the phase adjustment and sign correction:
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -630,33 +828,44 @@ def circuit(self, parameters):
 
   return qc
 \end{minted}
+This implementation ensures the quantum circuit generates the correct ground state of $H_{sg}$,
+with all non-zero components having the correct phase and sign. 
 
 \subsection*{Use your quantum circuit to measure the expectation value of the ground state of $H_{sg}$ . You will have to repeat your circuit three times - once to measure in each of the X, Y and Z computational bases. Each term of $H_{sg}$ can be measured in one of the three computational bases. Sum the contributions from the three bases and confirm that the summed energy is equal to the ground state eigenvalue}
 
-Trivially, the expectation value of the system Hamiltonian $H_{sg}$ is sum of the expectation value of its components. 
-Here, I gonna propose a general methodology to extract expectation value of $\sigma_{z}^{i}$ and $\sigma_{z}^{i}\sigma_{z}^{j}$.
+The expectation value of the system Hamiltonian $H_{sg}$ can be computed as the sum of the expectation values of its individual components. 
+To calculate the expectation value of operators such as $\sigma_{z}^{i}$ and $\sigma_{z}^{i}\sigma_{z}^{j}$,
+we decompose the Hamiltonian into measurable components and measure each component separately in the appropriate computational basis.
+
 First, $\sigma_{z}^{i}$ can be decomposed into:
-\begin{align}
+\begin{align*}
   \sigma_{z}^{i} &= I_{2}^{\otimes 3-i} \otimes \sigma_{z} \otimes I_{2}^{\otimes i} \\
   &=  \left(\ketbra{0} + \ketbra{1}\right)^{\otimes 3-i} \otimes \left(\ketbra{0} - \ketbra{1}\right) \otimes \left(\ketbra{0} + \ketbra{1}\right)^{\otimes i} \\
-\end{align}
+\end{align*}
 where $I_2$ is $2\times 2$ idenity matrix.
-Then the expectation value of $\sigma_{z}^{i}$ for a given state is:
+Then the expectation value of $\sigma_{z}^{i}$ can be expressed as follows: 
 \begin{align}
   \expectationvalue{\sigma_{z}^{i}} = \sum_{(b_{i} = 0)} m_{b} - \sum_{(b_{i} = 1)} m_{b}
 \end{align}
-where $b$ is the bit string, $b = b_3 b_2 b_1 b_0$ and $m_{b}$ is the estimated probability with bit string $b$, $m_{b} = \left|\bra{b}\ket{\psi}\right|^2$.
-Second, $\sigma_{z}^{i}\sigma_{z}^{j}$ is decomposed into:
-\begin{align}
+where $b = b_3 b_2 b_1 b_0$ is the bit string,  and $m_{b} = \left|\bra{b}\ket{\psi}\right|^2$ is the probability amplitude of the bitstring $b$ in the given state $\ket{\psi}$.
+The expectation value is obtained by summing over the measurement outcomes weighted by $\pm 1$, 
+depending on whether the corresponding qubit is in the state $\ket{0}$ or $\ket{1}$.
+
+Similarly, for the two-qubit operator, $\sigma_{z}^{i}\sigma_{z}^{j}$ is decomposed into:
+\begin{align*}
   \sigma_{z}^{i}\sigma_{z}^{j} &= I_{2}^{\otimes 3-j} \otimes \sigma_z \otimes I_{2}^{\otimes i-j-1} \otimes \sigma_{z} \otimes I_{2}^{\otimes i} \\
-  &=  \left(\ketbra{0} + \ketbra{1}\right)^{\otimes 3-i} \otimes \left(\ketbra{0} - \ketbra{1}\right)  \otimes \left(\ketbra{0} + \ketbra{1}\right)^{\otimes i-j-1}  \otimes \left(\ketbra{0} - \ketbra{1}\right) \otimes \left(\ketbra{0} + \ketbra{1}\right)^{\otimes i} \\
-\end{align}
-where $i>j$ is supposed without loss of generality. Then, the expectation value of $\sigma_{z}^{i}\sigma_{z}^{j} $ for a given state is:
+  =&  \left(\ketbra{0} + \ketbra{1}\right)^{\otimes 3-i} \otimes \left(\ketbra{0} - \ketbra{1}\right) \\
+  & \otimes \left(\ketbra{0} + \ketbra{1}\right)^{\otimes i-j-1}  \\
+  & \otimes \left(\ketbra{0} - \ketbra{1}\right) \\
+  & \otimes \left(\ketbra{0} + \ketbra{1}\right)^{\otimes i} 
+\end{align*}
+where $i>j$ is supposed without loss of generality. 
+Then, the expectation value of $\sigma_{z}^{i}\sigma_{z}^{j} $ is computed by considering whether the product of the states of qubits $i$ amd $j$ is $\ket{00}$ or $\ket{11}$(yielding $+1$) or $\ket{01}$ or $\ket{10}$(yielding $-1$):
 \begin{equation}
   \expectationvalue{\sigma_{z}^{i}\sigma_{z}^{j}} = \sum_{(b_{i}b_{j} = 0)} m_{b} - \sum_{(b_{i}b_{j}  = 1)} m_{b}
 \end{equation}
-Here, $\expectationvalue{\sigma_{x}^{i}\sigma_{x}^{j}}$ and $\expectationvalue{\sigma_{y}^{i}\sigma_{y}^{j}}$ can be estimated in the same way by change $0$ to $+,i$ and $1$ to $-,-i$ for each.
-The following code performs this expectation value extraction:
+
+The following code performs the expectation value extraction: 
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -677,11 +886,16 @@ def _calculate_expectation(self, basis, i, j=None):
   return expectation_value
 \end{minted}
 
-As discussed above, the measurement should performed on $x, y, z$ basis.  Generally, the measurement is performed on $z$ basis, which are described as POVM set, $\left\{ \ketbra{0000}, \ketbra{0001} , \cdots, \ketbra{1111} \right\}$.
+The expectation values of operators like $\expectationvalue{\sigma_{x}^{i}\sigma_{x}^{j}}$ and $\expectationvalue{\sigma_{y}^{i}\sigma_{y}^{j}}$  calculated similarly, but measurements are performed in the X and Y basis, respectively.
+Generally, the measurement is performed on $z$ basis, which are described as POVM set, $\left\{ \ketbra{0000}, \ketbra{0001} , \cdots, \ketbra{1111} \right\}$.
 By applying additional unitary operation before the measurement, we can make it as if we are performing measurement on a different basis.
-In other words, for a certain POVM operator $\Omega$, we apply additional unitary operation $U$ right before the measurement, we are performing measurement $U^{\dagger}\Omega U$. 
-If $U = H$, we can perfrom measurement on $x$-basis. And $U=HS$, we can perfrom measurement on $y$-basis.
-The following code generate such three circuits performing measurement on $x, y, z$ basis:
+Then, the standard Z-basis measurement is modified by applying suitable unitary transformations before the measurement:
+\begin{itemize}
+  \item For the X-basis, apply a Hadamard gate to each qubit, before the measurement.
+  \item For the Y-basis, apply a sequence of S-gate and Hadamard gate to each qubit, before the measurement.
+  \item For the Z-basis, no additional gates are required.
+\end{itemize}
+The following code generates quantum circuits to perform these measurements: 
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -699,9 +913,18 @@ def perform_measure(self, num_shots=10000):
   qc_y.measure_all()
   qc_z.measure_all()
 
-  outcome_x = MeasurementResultHandler(backend.run(qc_x, shots=num_shots).result().data()["counts"], self.num_qubits, num_shots)
-  outcome_y = MeasurementResultHandler(backend.run(qc_y, shots=num_shots).result().data()["counts"], self.num_qubits, num_shots)
-  outcome_z = MeasurementResultHandler(backend.run(qc_z, shots=num_shots).result().data()["counts"], self.num_qubits, num_shots)
+  outcome_x = MeasurementResultHandler(backend
+                .run(qc_x, shots=num_shots).result()
+                .data()["counts"], 
+                self.num_qubits, num_shots)
+  outcome_y = MeasurementResultHandler(backend
+                .run(qc_y, shots=num_shots).result()
+                .data()["counts"], 
+                self.num_qubits, num_shots)
+  outcome_z = MeasurementResultHandler(backend
+                .run(qc_z, shots=num_shots).result()
+                .data()["counts"], 
+                self.num_qubits, num_shots)
 
   self.measurement_outcome = {
     "x" : outcome_x,
@@ -711,7 +934,7 @@ def perform_measure(self, num_shots=10000):
 
   return self.measurement_outcome
 \end{minted}
-where \texttt{MeasurementResultHandler} converts measurement shots into estimated probability and fill zero shot results as zero probability.
+where \texttt{MeasurementResultHandler} processes the measurement results and fills any missing outcomes with zero probabilities.
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -719,10 +942,42 @@ def MeasurementResultHandler(result:dict, num_qubits:int, num_shots:int):
 	new_result = {}
 	for i in range(2**num_qubits):
 		temp = format(i,"#b")[2:]
-		key = "".join(["0" for _ in range(num_qubits - len(temp))]) + temp
-		new_result[key] = np.array(result[format(i,"#x")])/num_shots if result.get(format(i,"#x")) else np.array(0)
+		key = "".join(["0" 
+          for _ in 
+          range(num_qubits - len(temp))]) 
+          + temp
+		new_result[key] = np.array(
+                  result[format(i,"#x")])
+                  /num_shots 
+                  if result.get(format(i,"#x")) 
+                  else np.array(0)
 	return new_result
 \end{minted}
+
+Finally, The expectation value of $H_{sg}$ is calculated using the following code:
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def energy(self):
+  energy = 0
+  combinations = itertools.combinations([i 
+                  for i in range(self.num_qubits)], 2)
+
+  for coefficient, pair in zip(self.coefficients1, combinations):
+    energy += coefficient * self._calculate_expectation(
+                                  "x", pair[0], pair[1])
+    energy += coefficient * self._calculate_expectation(
+                                  "y", pair[0], pair[1])
+    energy += coefficient * self._calculate_expectation(
+                                  "z", pair[0], pair[1])
+
+  for idx, coefficient in enumerate(self.coefficients2):
+    energy += coefficient * self._calculate_expectation(
+                                  "z", idx)
+
+  return energy
+\end{minted}
+
 %\bibliography{reference}
 %\bibliographystyle{plain}
 

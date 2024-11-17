@@ -1,0 +1,12 @@
+def AdiabaticEvolution(self, tau, N):
+  time_step = np.linspace(0, tau, N)
+  dt = time_step[1] - time_step[0]
+
+  ground_state = np.ones(2**self.num_qubits)
+                /np.sqrt(2**self.num_qubits)
+  for t in time_step:
+    H = self.Propagator(t/tau)
+    propagator = scipy.linalg.expm(-1j*dt*H)
+    ground_state = propagator @ ground_state
+
+  return ground_state
