@@ -1,17 +1,10 @@
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{\PYGZus{}calculate\PYGZus{}expectation}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{basis}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{j}\PYG{o}{=}\PYG{k+kc}{None}\PYG{p}{):}
-  \PYG{n}{expectation\PYGZus{}value} \PYG{o}{=} \PYG{l+m+mi}{0}
-  \PYG{n}{measurement\PYGZus{}outcome} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{measurement\PYGZus{}outcome}\PYG{p}{[}\PYG{n}{basis}\PYG{p}{]}
-
-  \PYG{k}{for} \PYG{n}{bitstring}\PYG{p}{,} \PYG{n}{probability} \PYG{o+ow}{in} \PYG{n}{measurement\PYGZus{}outcome}\PYG{o}{.}\PYG{n}{items}\PYG{p}{():}
-    \PYG{n}{bit\PYGZus{}i} \PYG{o}{=} \PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{bitstring}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{n}{i}\PYG{p}{)} \PYG{o}{\PYGZam{}} \PYG{l+m+mi}{1}
-    \PYG{k}{if} \PYG{n}{j} \PYG{o+ow}{is} \PYG{o+ow}{not} \PYG{k+kc}{None}\PYG{p}{:}
-      \PYG{n}{bit\PYGZus{}j} \PYG{o}{=} \PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{bitstring}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{n}{j}\PYG{p}{)} \PYG{o}{\PYGZam{}} \PYG{l+m+mi}{1}
-      \PYG{n}{sign} \PYG{o}{=} \PYG{l+m+mi}{1} \PYG{k}{if} \PYG{p}{(}\PYG{n}{bit\PYGZus{}i} \PYG{o}{\PYGZca{}} \PYG{n}{bit\PYGZus{}j}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{0} \PYG{k}{else} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}Kron}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{array}\PYG{p}{):}
+    \PYG{n}{prod} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{array}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+        \PYG{k}{return} \PYG{n}{prod}
     \PYG{k}{else}\PYG{p}{:}
-      \PYG{n}{sign} \PYG{o}{=} \PYG{l+m+mi}{1} \PYG{k}{if} \PYG{n}{bit\PYGZus{}i} \PYG{o}{==} \PYG{l+m+mi}{0} \PYG{k}{else} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
-
-    \PYG{n}{expectation\PYGZus{}value} \PYG{o}{+=} \PYG{n}{sign} \PYG{o}{*} \PYG{n}{probability}
-
-  \PYG{k}{return} \PYG{n}{expectation\PYGZus{}value}
+        \PYG{k}{for} \PYG{n}{element} \PYG{o+ow}{in} \PYG{n}{array}\PYG{p}{:}
+            \PYG{n}{prod} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{kron}\PYG{p}{(}\PYG{n}{element}\PYG{p}{,} \PYG{n}{prod}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{prod}
 \end{Verbatim}

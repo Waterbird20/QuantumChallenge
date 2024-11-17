@@ -1,7 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{optimize}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{):}
-  \PYG{n}{random\PYGZus{}para} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{rand}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}
-  \PYG{n}{res} \PYG{o}{=} \PYG{n}{scipy}\PYG{o}{.}\PYG{n}{optimize}\PYG{o}{.}\PYG{n}{minimize}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{cost}\PYG{p}{,} \PYG{n}{random\PYGZus{}para}\PYG{p}{,} \PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}L\PYGZhy{}BFGS\PYGZhy{}B\PYGZdq{}}\PYG{p}{)}
-
-  \PYG{k}{return} \PYG{n}{res}
-\end{Verbatim}
