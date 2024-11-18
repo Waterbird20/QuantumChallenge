@@ -72,6 +72,7 @@ def __reset__(self):
 In this example, \texttt{self.coefficients2} is set to \texttt{None}. 
 Within the \texttt{for} loop, each pair of qubit indices $(i,j)$ runs through unique combinations in the following sequence: 
 $(0,0)$, $(0,1)$, $(0,2)$, $(1,2)$, $(1,3)$, $(2,3)$.
+For next section, \texttt{for} loop with \texttt{self.coefficients2}, qubit indices $i$ runs from 0 to 3.
 %This setup ensures that each distinct interaction between qubits is included without repetition, 
 %covering all possible unique two-qubit interactions in the Heisenberg Hamiltonian $H_{heisenberg}$.
 Additionally, the \texttt{\_Kron} method is implemented to ensure the Qiskit bit-ordering convention.
@@ -541,6 +542,10 @@ As shown in Figure \ref{fig:energylevels}, the eigenspectrum of Class 7 exhibits
 The figure illustrates the evolution of eigenvalues for each of the 11 symmetry classes as a function of the interpolation parameter $s$, which varies from 0 to 1. The horizontal axis represents $s$, 
 while the vertical axis corresponds to energy eigenvalues. Red-tone lines indicate higher energy eigenvalues, whereas violet-tone lines denote lower energy levels, including the ground state. 
 As $s$ progresses from 0 (the ground state of the mixer Hamiltonian $H_m$) to 1 (the Heisenberg spin glass Hamiltonian $H_{sg}$), the eigenvalues shift dynamically. 
+The mixer Hamiltonian is written as:
+\begin{equation}
+  H_{m} = -\sum_{i=0}^{3} \sigma_x^{i} 
+\end{equation}
 Notably, in several symmetry classes, the ground state crosses with higher energy eigenstates at intermediate $s$ values. 
 These crossings present critical points where the adiabatic algorithm may fail, as they allow the probability to leak from the ground state into excited states, undermining the system's adiabatic evolution.
 
@@ -570,11 +575,22 @@ def AdiabaticEvolution(self, tau, N):
   ground_state = np.ones(2**self.num_qubits)
                 /np.sqrt(2**self.num_qubits)
   for t in time_step[1:]:
-    H = self.Propagator(t/tau)
+    H = self.Propagator_Hamiltonian(t/tau)
     propagator = scipy.linalg.expm(-1j*dt*H)
     ground_state = propagator @ ground_state
   
   return ground_state
+\end{minted}
+Starting from the initial state $\ket{++++}$, the system evolves under the time propagator $e^{-i \Delta t H(s)}$
+where the Propagator Hamiltonian is given as:
+\begin{equation}
+  H(s) = (1-s)H_m + s H_{sg}
+\end{equation}
+\begin{minted}[bgcolor=bg,
+  frame=lines,
+  framesep=2mm]{python}
+def Propagator_Hamiltonian(self, s):
+  return (1-s)*self.H_m + s*self.H_sg
 \end{minted}
 
 \subsection*{In order to match the target vector of sixteen probabilities by performing adiabatic evolution, what value do you need to use for $\tau$ and $N$? The exact target probabilities and the probabilities resulting from adiabatic evolution should match to three significant decimal digits.}
@@ -593,7 +609,7 @@ produces the desired result, ensuring that the target probabilities and those ob
 Given the Hamiltonians  $H_{sg}$ and $H_{m}$ we have:
 \begin{align}
   H_{sg} &= \sum_{(i,j)} J_{i,j} H_{ij} + \sum_{i=0}^{3} h_{i}\sigma_{z}^{i} \\
-  H_{m} &= \sum_{i=0}^{3} \sigma_x^{i} 
+  H_{m} &= -\sum_{i=0}^{3} \sigma_x^{i} 
 \end{align}
 where $H_{ij} =\sigma_x^{i}\sigma_x^{j} +\sigma_y^{i}\sigma_y^{j} +\sigma_z^{i}\sigma_z^{j} $.
 The coefficients are:
@@ -612,7 +628,7 @@ For each time step in the adiabatic simulation, the time-dependent Hamiltonian $
 \end{align}
 where:
 \begin{align}
-  H_{x}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_x^{i}\sigma_x^{j} + (1-s) \sum_{i=0}^{3} \sigma_x^{i} \\
+  H_{x}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_x^{i}\sigma_x^{j} - (1-s) \sum_{i=0}^{3} \sigma_x^{i} \\
   H_{y}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_y^{i}\sigma_y^{j} \\
   H_{z}(s) &= s\sum_{(i,j)} J_{i,j} \sigma_z^{i}\sigma_z^{j} + s \sum_{i=0}^{3} h_i \sigma_z^{i} 
 \end{align}
@@ -773,7 +789,7 @@ This quantum circuit prepares a state that closely generates a probability distr
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
-def circuit(self, parameters):
+def circuit_without_phase(self, parameters):
   qc = qiskit.QuantumCircuit(self.num_qubits)
   for i in range(1,self.num_qubits):
     qc.x(i)
