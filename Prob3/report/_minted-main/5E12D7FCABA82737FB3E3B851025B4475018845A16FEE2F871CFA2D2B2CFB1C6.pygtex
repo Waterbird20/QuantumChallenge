@@ -1,14 +1,20 @@
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{def} \PYG{n+nf}{AdiabaticEvolution}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{tau}\PYG{p}{,} \PYG{n}{N}\PYG{p}{):}
-  \PYG{n}{time\PYGZus{}step} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{tau}\PYG{p}{,} \PYG{n}{N}\PYG{p}{)}
-  \PYG{n}{dt} \PYG{o}{=} \PYG{n}{time\PYGZus{}step}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{time\PYGZus{}step}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{k}{def} \PYG{n+nf}{energy}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{):}
+  \PYG{n}{energy} \PYG{o}{=} \PYG{l+m+mi}{0}
+  \PYG{n}{combinations} \PYG{o}{=} \PYG{n}{itertools}\PYG{o}{.}\PYG{n}{combinations}\PYG{p}{([}\PYG{n}{i}
+                  \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)],} \PYG{l+m+mi}{2}\PYG{p}{)}
 
-  \PYG{n}{ground\PYGZus{}state} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{ones}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{o}{**}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)}
-                \PYG{o}{/}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{o}{**}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)}
-  \PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}step}\PYG{p}{:}
-    \PYG{n}{H} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{Propagator}\PYG{p}{(}\PYG{n}{t}\PYG{o}{/}\PYG{n}{tau}\PYG{p}{)}
-    \PYG{n}{propagator} \PYG{o}{=} \PYG{n}{scipy}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{expm}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{n}{j}\PYG{o}{*}\PYG{n}{dt}\PYG{o}{*}\PYG{n}{H}\PYG{p}{)}
-    \PYG{n}{ground\PYGZus{}state} \PYG{o}{=} \PYG{n}{propagator} \PYG{o}{@} \PYG{n}{ground\PYGZus{}state}
+  \PYG{k}{for} \PYG{n}{coefficient}\PYG{p}{,} \PYG{n}{pair} \PYG{o+ow}{in} \PYG{n+nb}{zip}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{coefficients1}\PYG{p}{,} \PYG{n}{combinations}\PYG{p}{):}
+    \PYG{n}{energy} \PYG{o}{+=} \PYG{n}{coefficient} \PYG{o}{*} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}calculate\PYGZus{}expectation}\PYG{p}{(}
+                                  \PYG{l+s+s2}{\PYGZdq{}x\PYGZdq{}}\PYG{p}{,} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+    \PYG{n}{energy} \PYG{o}{+=} \PYG{n}{coefficient} \PYG{o}{*} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}calculate\PYGZus{}expectation}\PYG{p}{(}
+                                  \PYG{l+s+s2}{\PYGZdq{}y\PYGZdq{}}\PYG{p}{,} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+    \PYG{n}{energy} \PYG{o}{+=} \PYG{n}{coefficient} \PYG{o}{*} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}calculate\PYGZus{}expectation}\PYG{p}{(}
+                                  \PYG{l+s+s2}{\PYGZdq{}z\PYGZdq{}}\PYG{p}{,} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{pair}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
 
-  \PYG{k}{return} \PYG{n}{ground\PYGZus{}state}
+  \PYG{k}{for} \PYG{n}{idx}\PYG{p}{,} \PYG{n}{coefficient} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{coefficients2}\PYG{p}{):}
+    \PYG{n}{energy} \PYG{o}{+=} \PYG{n}{coefficient} \PYG{o}{*} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}calculate\PYGZus{}expectation}\PYG{p}{(}
+                                  \PYG{l+s+s2}{\PYGZdq{}z\PYGZdq{}}\PYG{p}{,} \PYG{n}{idx}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{n}{energy}
 \end{Verbatim}

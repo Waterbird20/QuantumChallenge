@@ -53,7 +53,7 @@ def __reset__(self):
     combinations = itertools.combinations(qubit_idx, 2)
     
     H_z = np.zeros([2**self.num_qubits, 2**self.num_qubits]
-                    , dtype=np.complex128)
+                    , dtype=np.complex64)
     if self.coefficients2 is not None:
         for i in range(self.num_qubits):
             temp = [self.I for _ in range(self.num_qubits)]
@@ -62,7 +62,7 @@ def __reset__(self):
     
     H_heisenberg = np.zeros([2**self.num_qubits, 
                             2**self.num_qubits]
-                            , dtype=np.complex128)
+                            , dtype=np.complex64)
     for coefficient, pair_idx 
       in zip(self.coefficients1, combinations):
         H_heisenberg += coefficient * self._H_ij(pair_idx)
@@ -72,9 +72,9 @@ def __reset__(self):
 In this example, \texttt{self.coefficients2} is set to \texttt{None}. 
 Within the \texttt{for} loop, each pair of qubit indices $(i,j)$ runs through unique combinations in the following sequence: 
 $(0,0)$, $(0,1)$, $(0,2)$, $(1,2)$, $(1,3)$, $(2,3)$.
-This setup ensures that each distinct interaction between qubits is included without repetition, 
-covering all possible unique two-qubit interactions in the Heisenberg Hamiltonian $H_{heisenberg}$.
-Additionally, the \texttt{\_Kron} method is implemented to maintain the Qiskit bit-ordering convention.
+%This setup ensures that each distinct interaction between qubits is included without repetition, 
+%covering all possible unique two-qubit interactions in the Heisenberg Hamiltonian $H_{heisenberg}$.
+Additionally, the \texttt{\_Kron} method is implemented to ensure the Qiskit bit-ordering convention.
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -127,13 +127,13 @@ Detailed information on eigenspectra and coefficient values can be found in the 
 
 The Heisenberg Hamiltonian $\mathcal{H}_{\text{heisenberg}}$ is defined as:
 \begin{equation}
-  \mathcal{H}_{\text{heisenberg}} = \sum_{(i,j)} J_{i,j} H_{i,j}
+  \mathcal{H}_{\text{heisenberg}} = \sum_{(i,j)} J_{i,j} H_{ij}
 \end{equation}
 where
 \begin{equation}
-  H_{i,j} = \sigma_x^i \sigma_x^j + \sigma_y^i \sigma_y^j + \sigma_z^i \sigma_z^j 
+  H_{ij} = \sigma_x^i \sigma_x^j + \sigma_y^i \sigma_y^j + \sigma_z^i \sigma_z^j 
 \end{equation}
-The interaction is classified as ferromagnetic when $J_{ij} = 1$ and anti-ferromagnetic when $J_{ij} = -1$. 
+The interaction is classified as ferromagnetic when $J_{ij} = 1$ and antiferromagnetic when $J_{ij} = -1$. 
 This Hamiltonian possesses intrinsic interchange symmetry, meaning that under an interchange of qubits $i$ and $j$, 
 both the eigenvalues and eigenstates of the Hamiltonian remain unchanged. 
 Consequently, all elements within the same symmetry class can be generated through such interchange operations.
@@ -350,10 +350,10 @@ The remaining model can be derived by applying one or multiple interchange opera
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class7_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class7_2.pdf}  \\
   \end{tabular}
-\caption{Figure 7: Two examples of models in Class 7. Left: Model with coefficients $(1,-1,-1,1,-1,1)$, where each qubit has one or two anti-ferromagnetic interactions. Right: Model with coefficients $(1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$. The symmetry class also allows sign-flip operations, preserving the class structure.}
+\caption{Two examples of models in Class 7. Left: Model with coefficients $(1,-1,-1,1,-1,1)$, where each qubit has one or two anti-ferromagnetic interactions. Right: Model with coefficients $(1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_2$. The symmetry class also allows sign-flip operations, preserving the class structure.}
 \end{figure}
 \paragraph{Class 7. } Three interaction terms are anti-ferromagnetic. As shown in the figure, each qubit has either one or two anti-ferromagnetic interactions. This symmetry class also possesses sign-flip symmetry, meaning that after flipping the signs of all 
-$J_{ij}$coefficients, the resulting Hamiltonian remains within the same symmetry class.
+$J_{ij}$ coefficients, the resulting Hamiltonian remains within the same symmetry class.
 By applying interchange operations and sign-flip operations, 12 elements within this symmetry class can be derived. 
 For example, starting from the left model in the figure with coefficients $(1,-1,-1,1,-1,1)$, we can derive the right model with coefficients $(1,-1,1,1,-1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_2$. 
 The other models can be obtained by applying one or multiple interchange operations and sign-flip operations.
@@ -391,8 +391,8 @@ The other models can be obtained by applying one or multiple interchange operati
 \end{figure}
 \paragraph{Class 8. } 
 From this point onward, it is convenient to focus on ferromagnetic interactions. 
-In this symmetry class, two interaction terms are ferromagnetic. As shown in the figure, one qubit has two ferromagnetic interactions, 
-while the remaining qubits have anti-ferromagnetic interactions.
+In this symmetry class, two interaction terms are ferromagnetic. As shown in the figure, one qubit has two ferromagnetic interactions.
+%while the remaining qubits have anti-ferromagnetic interactions.
 By applying interchange operations, 12 elements within the same symmetry class can be derived. 
 For example, starting from the left model in the figure with coefficients $(-1,-1,-1,-1,1,1)$, 
 we can derive the right model with coefficients $(-1,-1,1,-1,1,-1)$ by applying an interchange operation on qubits $q_0$ and $q_2$. 
@@ -419,7 +419,7 @@ Note that this symmetry class can also be derived by applying a sign-flip operat
   \begin{tabular}{cc}
     \includegraphics[width=0.46\textwidth]{./figure/class9_1.pdf} & \includegraphics[width=0.46\textwidth]{./figure/class9_2.pdf}  \\
   \end{tabular}
-\caption{Two examples of models in Class 9. Left: Model with coefficients $(-1,1,-1,-1,1,-1)$, where each qubit has one anti-ferromagnetic interaction. Right: Model with coefficients $(-1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_1$.}
+\caption{Two examples of models in Class 9. Left: Model with coefficients $(-1,1,-1,-1,1,-1)$, where each qubit has one ferromagnetic interaction. Right: Model with coefficients $(-1,-1,1,1,-1,-1)$, derived by applying an interchange operation on qubits $q_0$ and $q_1$.}
 \end{figure}
 \paragraph{Class 9. } 
 Two interaction terms are ferromagnetic. As shown in the figure, each qubit has exactly one anti-ferromagnetic interaction. 
@@ -548,7 +548,7 @@ These crossings present critical points where the adiabatic algorithm may fail, 
 \begin{figure}[!h]
   \centering
   \includegraphics[width=0.9\textwidth]{./figure/Eigenspectrum_Heisenberg_sg.pdf}
-  \caption{Evolution of eigenvalues for the modified Heisenberg spin glass Hamiltonian $H_{sg}$ during adiabatic evolution. The horizontal axis represents the interpolation parameter $s$, while the vertical axis shows energy eigenvalues. Red-tone lines denote higher energy eigenvalues, and blue-tone lines denote lower energy eigenvalues, including the ground state. Notably, the ground state eigenvalue does not cross with any higher energy eigenvalues, ensuring adiabatic evolution without transitions to excited states.}
+  \caption{Evolution of eigenvalues for the modified Heisenberg spin glass Hamiltonian $H_{sg}$ during adiabatic evolution. The horizontal axis represents the interpolation parameter $s$, while the vertical axis shows energy eigenvalues. Red-tone lines denote higher energy eigenvalues, and violet-tone lines denote lower energy eigenvalues, including the ground state. Notably, the ground state eigenvalue does not cross with any higher energy eigenvalues, ensuring adiabatic evolution without transitions to excited states.}
   \label{fig:adiabatic_H_sg}
 \end{figure}
 
@@ -569,7 +569,7 @@ def AdiabaticEvolution(self, tau, N):
   
   ground_state = np.ones(2**self.num_qubits)
                 /np.sqrt(2**self.num_qubits)
-  for t in time_step:
+  for t in time_step[1:]:
     H = self.Propagator(t/tau)
     propagator = scipy.linalg.expm(-1j*dt*H)
     ground_state = propagator @ ground_state
@@ -578,21 +578,21 @@ def AdiabaticEvolution(self, tau, N):
 \end{minted}
 
 \subsection*{In order to match the target vector of sixteen probabilities by performing adiabatic evolution, what value do you need to use for $\tau$ and $N$? The exact target probabilities and the probabilities resulting from adiabatic evolution should match to three significant decimal digits.}
-The required running time for adiabatic evolution depends on the eigenspectrum of $H_{sg}$, particularly the energy gap, $\triangle$,  between the two lowest energy eigenvalues. The adiabatic evolution time $\tau$ must satisfy the following condition:
+The required running time for adiabatic evolution depends on the eigenspectrum of $H_{sg}$, particularly the energy gap, $\Delta$,  between the two lowest energy eigenvalues\cite{farhi2002quantumadiabaticevolutionalgorithms,doi:10.1126/science.1057726}. The adiabatic evolution time $\tau$ must satisfy the following condition:
 \begin{equation}
-  \tau \gg \frac{\epsilon}{\triangle^{2}}
+  \tau \gg \frac{\epsilon}{\Delta^{2}}
 \end{equation}
-where $\triangle = \min_{0\leq s \leq 1} (E_1 (s) - E_0 (s))$ is the minimum energy gap between the ground state and the first excited state, 
+where $\Delta = \min_{0\leq s \leq 1} (E_1 (s) - E_0 (s))$ is the minimum energy gap between the ground state and the first excited state, 
 and $\epsilon$ is is the largest eigenvalue of the operator, $H_{sg} - H_{m}$, representing the difference between the final Hamiltonian and the initial mixer Hamiltonian.
 
-In our case, $\triangle \simeq 0.2666$ and $\epsilon \simeq 17.79$, then, we have $\tau \simeq 250.4$. 
+In our case, $\Delta \simeq 0.2666$ and $\epsilon \simeq 17.79$, then, we have $\tau \simeq 250.4$. 
 After further tuning, I found that using $\tau=1000$ and $N=2000$(with time step size $dt$ determined accordingly)
 produces the desired result, ensuring that the target probabilities and those obtained from adiabatic evolution match to three significant decimal places.
 
 \subsection*{List out the terms in $H_{sg}$ and $H_{m}$ and, for each term, provide the gate that arises when that term is exponentiated. You can use any gate in Qiskit's standard gate set. How many single-qubit gates are needed for each time step? How many two-qubit gates are needed for each time step?}
 Given the Hamiltonians  $H_{sg}$ and $H_{m}$ we have:
 \begin{align}
-  H_{sg} &= \sum_{(i,j)} J_{i,j} H_{i,j} + \sum_{i=0}^{3} h_{i}\sigma_{z}^{i} \\
+  H_{sg} &= \sum_{(i,j)} J_{i,j} H_{ij} + \sum_{i=0}^{3} h_{i}\sigma_{z}^{i} \\
   H_{m} &= \sum_{i=0}^{3} \sigma_x^{i} 
 \end{align}
 where $H_{ij} =\sigma_x^{i}\sigma_x^{j} +\sigma_y^{i}\sigma_y^{j} +\sigma_z^{i}\sigma_z^{j} $.
@@ -637,28 +637,28 @@ RX gates are unnecessary, only 4 single-qubit gates and 18 two-qubit gates are n
 
 \paragraph{What if the time step is not small enough?}
 
-When the time step $\triangle t$ is not sufficiently small, the terms in $H_{x}, H_{y}, H_{z}$ are all commutable with each other.
-This necessitates the use of a Trotter-Suzuki decomposition to approximate the time propagator. For a given time interval $t \sim t + \triangle t$.
+When the time step $\Delta t$ is not sufficiently small, $H_{x}, H_{y}, H_{z}$ are not commutable with each other.
+This necessitates the use of a Trotter-Suzuki decomposition to approximate the time propagator\cite{Wittek_2013, Berry_2006, 30b65616453b4429964771f7ea0f7186}. For a given time interval $t \sim t + \Delta t$.
 where total evolution time is $\tau$, the time propagator is:
 \begin{equation}
-  e^{-i H \triangle t} = e^{-i \triangle t \left(H_x\left(\frac{t+\triangle t}{\tau}\right)+H_y\left(\frac{t+\triangle t}{\tau}\right)+H_z\left(\frac{t+\triangle t}{\tau}\right)\right) }
+  e^{-i H \Delta t} = e^{-i \Delta t \left(H_x\left(\frac{t+\Delta t}{\tau}\right)+H_y\left(\frac{t+\Delta t}{\tau}\right)+H_z\left(\frac{t+\Delta t}{\tau}\right)\right) }
 \end{equation}
-Here $t+\triangle t$ ensures $s=1$ at the final time step. 
+Here $t+\Delta t$ ensures $s=1$ at the final time step. 
 Using $t$, would cause no evolution in the first step where $s=0$ as the initialized $+$ state is already an eigenstate of the first propagator.
 
 To address the non-commutativity, we apply Trotter-Suzuki decomposition:
 \begin{enumerate}
   \item First-order approximation:
   \begin{equation}
-    U(t)_1 = e^{-i \triangle t H_x\left(\frac{t+\triangle t}{\tau}\right)}e^{-i \triangle t H_y\left(\frac{t+\triangle t}{\tau}\right)}e^{-i \triangle t H_z\left(\frac{t+\triangle t}{\tau}\right)}
+    U(t)_1 = e^{-i \Delta t H_x\left(\frac{t+\Delta t}{\tau}\right)}e^{-i \Delta t H_y\left(\frac{t+\Delta t}{\tau}\right)}e^{-i \Delta t H_z\left(\frac{t+\Delta t}{\tau}\right)}
   \end{equation}
   \item Second-order approximation:
   \begin{equation}
-    U(t)_2 = U\left(\frac{t}{2}\right)_1^T U\left(\frac{t}{2}\right)_1
+    U(t)_2 = U_1\left(\frac{t}{2}\right)^T U_1\left(\frac{t}{2}\right)
   \end{equation}
   \item Fourth-order approximation:
   \begin{equation}
-    U(t)_4 = U\left(\alpha t\right)_2 U\left(\alpha t\right)_2 U\left((1 -4\alpha) t\right)_2 U\left(\alpha t\right)_2 U\left(\alpha t\right)_2
+    U(t)_4 = U_2 \left(\alpha t\right) U_2 \left(\alpha t\right) U_2 \left((1 -4\alpha) t\right) U_2 \left(\alpha t\right) U_2 \left(\alpha t\right)
   \end{equation}
 \end{enumerate}
 where $\alpha = \frac{1}{4-4^{\frac{1}{3}}}$.
@@ -688,7 +688,7 @@ Using the fourth-order Trotter-Suzuki approximation, each time step involves exp
 For each time step in the fourth-order Trotter-Suzuki approximation, the circuit involves exponentiating the terms in  $H_x$,  $H_y$, and  $H_z$.
 Specifically, $H_x$ requires 6 RXX gates and 4 RX gates, $H_y$ requires 6 RYY gates, and  $H_z$ requires 6 RZZ gates and 4 RZ gates. 
 However, due to the structure of the Trotter-Suzuki sequence, the first and last exponentiated  $H_z$ terms overlap, allowing the omission of 6 
-RZZ gates and 4 RZ gates in each time step. As a result, a typical time step requires 30 RXX gates, 60 RYY gates, and 30 RZZ gates, along with 20 RX and 20 RZ single-qubit gates, 
+RZZ gates and 4 RZ gates in each time step. As a result, a typical time step requires 30 RXX gates, 60 RYY gates, and 30 RZZ gates, along with 20 RX and 20 RZ gates, 
 totaling 120 two-qubit gates and 40 single-qubit gates. For the final time step, where 
 $s=1$, the RX gates are no longer needed, reducing the single-qubit gate count to 20, while the two-qubit gate count remains at 120.
 
@@ -703,13 +703,13 @@ The adiabatic evolution approach appears to be impractical. As discussed in the 
 To achieve three-digit accuracy for the sixteen probabilities characterizing the ground state, 
 $N=1000$ time steps are needed. This results in a total of roughly 8000 single-qubit gates and 18,000 two-qubit gates.
 
-Since two-qubit gate errors dominate in quantum devices, their impact is critical. According to Figure \ref{fig:ionq_forte}, the IONQ Forte device has a two-qubit gate error rate of $p=1.530 \times 10^{-2}$. 
+Since two-qubit gate errors dominate in quantum devices, their impact is critical. According to Figure \ref{fig:ionq_forte}, the IONQ Forte device has a two-qubit gate error rate of $p=1.530 \times 10^{-2}$ \cite{chen2024benchmarkingtrappedionquantumcomputer}. 
 The probability of at least one gate failure during the entire sequence can be calculated as:
 \begin{equation}
   P_{\text{failure}} = 1-(1-p)^{18000}.
 \end{equation}
 Given the high number of gates, this probability is effectively 1, indicating that nearly every execution will contain errors. 
-Reducing the number of time steps $N$might seem like a solution, but doing so would require using Trotter-Suzuki approximations, which increase the number of two-qubit gates per time step.
+Reducing the number of time steps $N$ might seem like a solution, but doing so would require using Trotter-Suzuki approximations, which increase the number of two-qubit gates per time step.
 
 As a result, the cumulative gate errors would still prevent accurate adiabatic simulation toward the ground state. 
 Under current NISQ hardware limitations, this makes adiabatic evolution impractical for achieving the desired level of accuracy.
@@ -736,7 +736,7 @@ def ansatz(self, parameters):
 
   return state
 \end{minted}
-After constructing the ansatz, the probabilities of the resulting state are compared with the probability amplitudes of the exact ground state obtained using \texttt{np.linalg.eigvalsh}. The following cost function calculates the difference between the two:
+After constructing the ansatz, the probabilities of the resulting state are compared with the probability amplitudes of the exact ground state obtained using \texttt{np.linalg.eigvalsh}. The following cost function calculates the L2-norm between the two:
 \begin{minted}[bgcolor=bg,
   frame=lines,
   framesep=2mm]{python}
@@ -767,7 +767,7 @@ Noting that $\left[\sigma_x^{i}\sigma_x^{j}, \sigma_y^{i}\sigma_y^{j} \right] = 
 This decomposition corresponds to a combination of the RXX gate and the RYY gate, respectively.
 
 To construct the quantum circuit:
-First, Apply X gates to qubits 1, 2, and 3 to initialize the system in the $\ket{1110}$ state, Second,
+First, Apply X gates to qubits 1, 2, and 3 to initialize the system in the $\ket{1110}$ state. Second,
 Apply parameterized RXX and RYY gates on the qubit pairs (0,1), (0,2), and (0,3), corresponding to the XY-mixer operations.
 This quantum circuit prepares a state that closely generates a probability distribution similar to the exact ground state. The implementation is as follows:
 \begin{minted}[bgcolor=bg,
@@ -862,7 +862,7 @@ Similarly, for the two-qubit operator, $\sigma_{z}^{i}\sigma_{z}^{j}$ is decompo
 where $i>j$ is supposed without loss of generality. 
 Then, the expectation value of $\sigma_{z}^{i}\sigma_{z}^{j} $ is computed by considering whether the product of the states of qubits $i$ amd $j$ is $\ket{00}$ or $\ket{11}$(yielding $+1$) or $\ket{01}$ or $\ket{10}$(yielding $-1$):
 \begin{equation}
-  \expectationvalue{\sigma_{z}^{i}\sigma_{z}^{j}} = \sum_{(b_{i}b_{j} = 0)} m_{b} - \sum_{(b_{i}b_{j}  = 1)} m_{b}
+  \expectationvalue{\sigma_{z}^{i}\sigma_{z}^{j}} = \sum_{(b_{i}\oplus b_{j} = 0)} m_{b} - \sum_{(b_{i}\oplus b_{j}  = 1)} m_{b}
 \end{equation}
 
 The following code performs the expectation value extraction: 
@@ -978,7 +978,30 @@ def energy(self):
   return energy
 \end{minted}
 
-%\bibliography{reference}
-%\bibliographystyle{plain}
+I conducted a simulation to extract the ground state energy from three circuit executions, varying the number of measurement shots from $10^3$ to $10^7$.
+For each shot count, 100 simulations were performed to analyze the accuracy and consistency of the measured energy.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/energy_simulation.pdf}
+  \caption{Comparison of the measured energy and its accuracy as a function of total measurement shot number. 
+  (Left) The measured energy $\expectationvalue{H_{sg}}$(blue markers) approaches the exact ground state energy (orange line) as the total number of shots increases. 
+  The shaded area represents the error margin around the measured energy. 
+  (Right) The average relative error $\epsilon$ of the measured energy decreases as the total number of shots increases.
+  The relative error is calculated as $\left|\frac{\expectationvalue{H_{sg}} - E_0 }{E_{0}}\right|$.
+  }
+  \label{fig:energy_simulation}
+\end{figure}
+The figure illustrates how the accuracy of the measured energy $\expectationvalue{H_{sg}}$ improves with an increasing number of measurement shots. 
+On the left, the measured energy (blue markers) converges toward the exact energy (orange line) as the total number of shots increases. 
+The shaded region denotes the error margin around the measured energy, which progressively narrows, indicating reduced error.
+
+On the right, the average relative error $\epsilon$ of the measured energy from the exact ground state energy $E_{0}$ is plotted against the total shot number
+A clear trend emerges: the average relative error decreases sharply as the shot count increases.
+
+As shown in Figure \ref{fig:energy_simulation}, with more than $10^6$ shots, therefore, the average relative error falls below $10^{-3}$, enabling an accurate extraction of the ground state energy. 
+
+\bibliography{reference}
+\bibliographystyle{plain}
 
 \end{document}

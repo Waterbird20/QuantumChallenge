@@ -1,0 +1,41 @@
+\begin{thebibliography}{1}
+
+\bibitem{Berry_2006}
+Dominic~W. Berry, Graeme Ahokas, Richard Cleve, and Barry~C. Sanders.
+\newblock Efficient quantum algorithms for simulating sparse hamiltonians.
+\newblock {\em Communications in Mathematical Physics}, 270(2):359–371,
+  December 2006.
+
+\bibitem{chen2024benchmarkingtrappedionquantumcomputer}
+Jwo-Sy Chen, Erik Nielsen, Matthew Ebert, Volkan Inlek, Kenneth Wright,
+  Vandiver Chaplin, Andrii Maksymov, Eduardo Páez, Amrit Poudel, Peter Maunz,
+  and John Gamble.
+\newblock Benchmarking a trapped-ion quantum computer with 30 qubits, 2024.
+
+\bibitem{farhi2002quantumadiabaticevolutionalgorithms}
+Edward Farhi, Jeffrey Goldstone, and Sam Gutmann.
+\newblock Quantum adiabatic evolution algorithms versus simulated annealing,
+  2002.
+
+\bibitem{doi:10.1126/science.1057726}
+Edward Farhi, Jeffrey Goldstone, Sam Gutmann, Joshua Lapan, Andrew Lundgren,
+  and Daniel Preda.
+\newblock A quantum adiabatic evolution algorithm applied to random instances
+  of an np-complete problem.
+\newblock {\em Science}, 292(5516):472--475, 2001.
+
+\bibitem{30b65616453b4429964771f7ea0f7186}
+{Hans De} Raedt.
+\newblock {\em Computer simulation of quantum phenomena in nano-scale devices},
+  pages 107 -- 146.
+\newblock University of Groningen, The Zernike Institute for Advanced
+  Materials, 1996.
+
+\bibitem{Wittek_2013}
+Peter Wittek and Fernando~M. Cucchietti.
+\newblock A second-order distributed trotter–suzuki solver with a hybrid
+  cpu–gpu kernel.
+\newblock {\em Computer Physics Communications}, 184(4):1165–1171, April
+  2013.
+
+\end{thebibliography}

@@ -5,7 +5,7 @@
 
   \PYG{n}{ground\PYGZus{}state} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{ones}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{o}{**}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)}
                 \PYG{o}{/}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{o}{**}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{num\PYGZus{}qubits}\PYG{p}{)}
-  \PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}step}\PYG{p}{:}
+  \PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}step}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:]:}
     \PYG{n}{H} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{Propagator}\PYG{p}{(}\PYG{n}{t}\PYG{o}{/}\PYG{n}{tau}\PYG{p}{)}
     \PYG{n}{propagator} \PYG{o}{=} \PYG{n}{scipy}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{expm}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{n}{j}\PYG{o}{*}\PYG{n}{dt}\PYG{o}{*}\PYG{n}{H}\PYG{p}{)}
     \PYG{n}{ground\PYGZus{}state} \PYG{o}{=} \PYG{n}{propagator} \PYG{o}{@} \PYG{n}{ground\PYGZus{}state}
